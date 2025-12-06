@@ -1,156 +1,174 @@
-📌 KIIT Placement Portal (MERN Stack)
+# 📌 KIIT Placement Portal (MERN Stack)
 
-A full-stack web application for KIIT University students to stay updated about on-campus placement drives, recruiting companies, important dates, and real-time reminders.
-Built using the MERN Stack (MongoDB, Express.js, React.js, Node.js).
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/Protrick/KIIT-RecruitZone.svg)](https://github.com/Protrick/KIIT-RecruitZone/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/Protrick/KIIT-RecruitZone.svg)](https://github.com/Protrick/KIIT-RecruitZone/issues)
 
-🚀 Features
-🎯 Student Features
+A full-stack web application for KIIT University students to stay updated about on-campus placement drives, recruiting companies, important dates, and real-time reminders. Built using the MERN Stack (MongoDB, Express.js, React.js, Node.js).
 
-View upcoming on-campus placement drives
+## 🚀 Features
 
-See company details (roles, CTC, eligibility, branches allowed, etc.)
+### 🎯 Student Features
 
-Get real-time notifications & reminders
+- View upcoming on-campus placement drives
+- See company details (roles, CTC, eligibility, branches allowed, etc.)
+- Get real-time notifications & reminders
+- Save/Bookmark companies of interest
+- Mobile responsive UI
 
-Save/Bookmark companies of interest
+### 🎓 Admin / University Features
 
-Mobile responsive UI
+- Add New Company Drive
+- Update/Delete Company details
+- Schedule notifications & reminders
+- Role-based secure authentication
+- Dashboard to track student interest
 
-🎓 Admin / University Features
+## 🛠️ Tech Stack
 
-Add New Company Drive
+### Frontend
 
-Update/Delete Company details
+- React.js
+- React Router
+- Axios
+- TailwindCSS / Material UI
 
-Schedule notifications & reminders
+### Backend
 
-Role-based secure authentication
+- Node.js
+- Express.js
+- JWT Authentication
+- Nodemailer / Push Notifications
 
-Dashboard to track student interest
+### Database
 
-🛠️ Tech Stack
-Frontend
+- MongoDB (Mongoose ORM)
 
-React.js
+## 📂 Project Structure
 
-React Router
-
-Axios
-
-TailwindCSS / Material UI (your choice)
-
-Backend
-
-Node.js
-
-Express.js
-
-JWT Authentication
-
-Nodemailer / Push Notifications
-
-Database
-
-MongoDB (Mongoose ORM)
-
-📂 Project Structure
+```
 KIIT-Placement-Portal/
 │
 ├── backend/
-│ ├── config/
-│ ├── controllers/
-│ ├── models/
-│ ├── routes/
-│ ├── middleware/
-│ ├── utils/
-│ └── server.js
+│   ├── config/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── middleware/
+│   ├── utils/
+│   └── server.js
 │
 ├── frontend/
-│ ├── public/
-│ ├── src/
-│ │ ├── components/
-│ │ ├── pages/
-│ │ ├── context/
-│ │ ├── hooks/
-│ │ └── App.jsx
-│ └── package.json
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── context/
+│   │   ├── hooks/
+│   │   └── App.jsx
+│   └── package.json
 │
 ├── README.md
 └── package.json
+```
 
-⚙️ Setup Instructions
-1️⃣ Clone the repo
-git clone https://github.com/yourusername/kiit-placement-portal.git
-cd kiit-placement-portal
+## ⚙️ Setup Instructions
 
-2️⃣ Install dependencies
-Backend
+### 1️⃣ Clone the repo
+
+```bash
+git clone https://github.com/Protrick/KIIT-RecruitZone.git
+cd KIIT-RecruitZone
+```
+
+### 2️⃣ Install dependencies
+
+#### Backend
+
+```bash
 cd backend
 npm install
+```
 
-Frontend
+#### Frontend
+
+```bash
 cd frontend
 npm install
+```
 
-🔑 Environment Variables
+## 🔑 Environment Variables
 
-Create a .env file inside /backend/:
+Create a `.env` file inside `/backend/`:
 
+```env
 PORT=5000
 MONGO_URI=your_mongo_connection_string
 JWT_SECRET=your_secret_key
 EMAIL_USER=your_email
 EMAIL_PASS=your_password
 CLIENT_URL=http://localhost:5173
+```
 
-▶️ Run the project
-Run Backend
+## ▶️ Run the project
+
+### Run Backend
+
+```bash
 cd backend
 npm start
+```
 
-Run Frontend (Vite)
+### Run Frontend (Vite)
+
+```bash
 cd frontend
 npm run dev
+```
 
-📡 API Endpoints (Sample)
-Auth
-Method Endpoint Description
-POST /api/auth/register Register student/admin
-POST /api/auth/login Login
-Companies
-Method Endpoint Description
-GET /api/companies Get all companies
-POST /api/companies Add new company (Admin)
-PUT /api/companies/:id Update company
-DELETE /api/companies/:id Delete company
-🔔 Notifications / Reminders
+## 📡 API Endpoints
 
-Automatic reminder emails
+### Auth
 
-Scheduled push notifications for upcoming drive dates
+| Method | Endpoint           | Description            |
+| ------ | ------------------ | ---------------------- |
+| POST   | /api/auth/register | Register student/admin |
+| POST   | /api/auth/login    | Login                  |
 
-Cron jobs for automation
+### Companies
 
-🔐 Security Features
+| Method | Endpoint           | Description             |
+| ------ | ------------------ | ----------------------- |
+| GET    | /api/companies     | Get all companies       |
+| POST   | /api/companies     | Add new company (Admin) |
+| PUT    | /api/companies/:id | Update company          |
+| DELETE | /api/companies/:id | Delete company          |
 
-JWT Auth
+## 🔔 Notifications / Reminders
 
-Password hashing (bcrypt)
+- Automatic reminder emails
+- Scheduled push notifications for upcoming drive dates
+- Cron jobs for automation
 
-Admin-only protected routes
+## 🔐 Security Features
 
-CORS enabled
+- JWT Authentication
+- Password hashing (bcrypt)
+- Admin-only protected routes
+- CORS enabled
 
-🤝 Contribution Guidelines
+## 🤝 Contributing
 
-Fork the repo
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-Create a feature branch
+## 📄 License
 
-Commit changes
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Make a PR
+---
 
-📄 License
-
-MIT License © 2025
+Made with ❤️ for KIIT University students.
