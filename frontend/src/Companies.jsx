@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import CompanyCard from "./CompanyCard";
-import companiesData from "./data/companies.json";
+import CompanyCard from "./Companycard";
+import companiesData from "./data/Companies.json";
 
 const Companies = () => {
   const [companies, setCompanies] = useState([]);
