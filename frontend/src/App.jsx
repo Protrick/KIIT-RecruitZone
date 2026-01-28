@@ -11,15 +11,15 @@ import AuthPage from "./components/Authpage";
 import Internship from "./pages/Internships";
 
 function App() {
-  // const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   return (
     <Router>
       {/* Authentication temporarily disabled for development */}
-      {/* {isAuthenticated ? ( */}
+      {isAuthenticated ? (
         <>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Dashboard />} />
             <Route path="/companies" element={<Companies />} />
             <Route path="/events" element={<Events />} />
             <Route path="/admin" element={<Admin />} />
@@ -28,9 +28,9 @@ function App() {
             <Route path="/dashboard/internships" element={<Internship />} />
           </Routes>
         </>
-      {/* ) : (
+      ) : (
         <AuthPage onLogin={() => setIsAuthenticated(true)} />
-      )} */}
+      )}
     </Router>
   );
 }
