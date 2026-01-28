@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import EventCard from "./EventCard";
-import eventsData from "./data/Events.json";
+import EventCard from "../components/EventCard";
+import eventsData from "../data/Events.json";
 
 const Events = () => {
   const [events, setEvents] = useState([]);

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./AuthPage.css";
+import "./Authpage.css";
 import campus from "../assets/kiit-university-banner.jpg";
 import logo from "../assets/KIIT-logo.jpg";
 

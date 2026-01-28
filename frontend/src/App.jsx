@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Navbar from "./Navbar";
-import Home from "./Home";
-import Companies from "./Companies";
-import Events from "./Events";
-import Admin from "./Admin";
-import AuthPage from "./components/AuthPage";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Companies from "./pages/Companies";
+import Events from "./pages/Events";
+import Admin from "./pages/Admin";
+import AuthPage from "./components/Authpage";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
