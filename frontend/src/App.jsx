@@ -22,11 +22,6 @@ function App() {
             <Route path="/companies" element={<Companies />} />
             <Route path="/events" element={<Events />} />
             <Route path="/admin" element={<Admin />} />
-<<<<<<< HEAD
-            <Route path="/dashboard/*" element={<Dashboard />} />
-            <Route path="/dashboard/internships" element={<Internship />} />
-=======
->>>>>>> 82443ca (design improved bg changed)
           </Routes>
         </>
       ) : (
