@@ -7,6 +7,7 @@ import Events from "./pages/Events";
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import AuthPage from "./components/Authpage";
+import Internship from "./pages/Internships";
 
 function App() {
   // const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -22,6 +23,7 @@ function App() {
             <Route path="/events" element={<Events />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/dashboard/*" element={<Dashboard />} />
+            <Route path="/dashboard/internships" element={<Internship />} />
           </Routes>
         </>
       {/* ) : (
