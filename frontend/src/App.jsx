@@ -6,6 +6,7 @@ import Companies from "./pages/Companies";
 import Events from "./pages/Events";
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
+import Jobs from "./pages/Jobs";
 import AuthPage from "./components/Authpage";
 import Internship from "./pages/Internships";
 
@@ -22,6 +23,9 @@ function App() {
             <Route path="/companies" element={<Companies />} />
             <Route path="/events" element={<Events />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/dashboard/*" element={<Dashboard />} />
+            <Route path="/dashboard/jobs" element={<Jobs />} />
+            <Route path="/dashboard/internships" element={<Internship />} />
           </Routes>
         </>
       ) : (
