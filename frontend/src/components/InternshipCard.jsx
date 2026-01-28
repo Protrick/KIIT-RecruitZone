@@ -26,7 +26,7 @@ const InternshipCard = ({ internship }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition p-6 flex flex-col gap-4">
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-green-600 transition p-6 flex flex-col gap-4">
 
       {/* Top Section */}
       <div className="flex justify-between items-start">
