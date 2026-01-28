@@ -1,31 +1,32 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Companies from "./pages/Companies";
 import Events from "./pages/Events";
 import Admin from "./pages/Admin";
+import Dashboard from "./pages/Dashboard";
 import AuthPage from "./components/Authpage";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   return (
     <Router>
-      {isAuthenticated ? (
+      {/* Authentication temporarily disabled for development */}
+      {/* {isAuthenticated ? ( */}
         <>
-          <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/companies" element={<Companies />} />
             <Route path="/events" element={<Events />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/dashboard/*" element={<Dashboard />} />
           </Routes>
         </>
-      ) : (
+      {/* ) : (
         <AuthPage onLogin={() => setIsAuthenticated(true)} />
-      )}
+      )} */}
     </Router>
   );
 }
