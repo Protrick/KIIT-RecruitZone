@@ -5,6 +5,7 @@ import jobs from "../data/jobs.json";
 import JobCard from "../components/JobCard";
 import FilterBar from "../components/FilterBar";
 
+
 const Jobs = () => {
   const [tab, setTab] = useState("latest");
 
@@ -13,7 +14,8 @@ const Jobs = () => {
   );
 
   const latestJobs = sortedJobs.slice(0, 3);
-  const displayJobs = tab === "latest" ? latestJobs : sortedJobs;
+  
+
 
   const [filters, setFilters] = useState({
   type: "",
@@ -32,6 +34,60 @@ const toggleBookmark = (id) => {
       : [...prev, id]
   );
 };
+
+const applyFilters = (jobsList) => {
+  let filtered = [...jobsList];
+
+  // Type filter
+  if (filters.type) {
+    filtered = filtered.filter(
+      (job) => job.type === filters.type
+    );
+  }
+
+  // Location filter
+  if (filters.location) {
+    filtered = filtered.filter(
+      (job) =>
+        job.location.toLowerCase().includes(filters.location.toLowerCase())
+    );
+  }
+
+  // Category filter (role OR skills)
+  if (filters.category) {
+    filtered = filtered.filter(
+      (job) =>
+        job.role.toLowerCase().includes(filters.category.toLowerCase()) ||
+        job.skills.some((skill) =>
+          skill.toLowerCase().includes(filters.category.toLowerCase())
+        )
+    );
+  }
+
+  // Sorting
+  if (filters.sort === "latest") {
+    filtered.sort(
+      (a, b) => new Date(b.postedDate) - new Date(a.postedDate)
+    );
+  }
+
+  if (filters.sort === "ctc-high") {
+    filtered.sort(
+      (a, b) => parseFloat(b.ctc) - parseFloat(a.ctc)
+    );
+  }
+
+  if (filters.sort === "ctc-low") {
+    filtered.sort(
+      (a, b) => parseFloat(a.ctc) - parseFloat(b.ctc)
+    );
+  }
+
+  return filtered;
+};
+const baseJobs = tab === "latest" ? latestJobs : sortedJobs;
+  const displayJobs = applyFilters(baseJobs);
+
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f4fbf7]">
@@ -118,17 +174,13 @@ const toggleBookmark = (id) => {
   </div>
 
 
-      {/* ===== JOB CARDS ===== */}
-<div className="px-6 pb-14 space-y-6">
+{/* ===== JOB CARDS ===== */}
+<div className="px-6 pb-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
   {displayJobs.map((job) => (
-    <JobCard
-      key={job.id}
-      job={job}
-      isBookmarked={bookmarked.includes(job.id)}
-      onBookmark={toggleBookmark}
-    />
+    <JobCard key={job.id} job={job} />
   ))}
 </div>
+
 
 
       {/* ===== FOOTER (same as dashboard) ===== */}

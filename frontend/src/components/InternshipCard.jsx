@@ -1,57 +1,53 @@
 import { Heart, MapPin, IndianRupee } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const JobCard = ({ job }) => {
+const InternshipCard = ({ internship }) => {
   const [isSaved, setIsSaved] = useState(false);
 
-  // Load saved jobs from localStorage
+  // Load saved state
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("savedJobs")) || [];
-    setIsSaved(saved.includes(job.id));
-  }, [job.id]);
+    const saved = JSON.parse(localStorage.getItem("savedInternships")) || [];
+    setIsSaved(saved.includes(internship.id));
+  }, [internship.id]);
 
   // Toggle bookmark
   const toggleBookmark = () => {
-    const saved = JSON.parse(localStorage.getItem("savedJobs")) || [];
+    const saved = JSON.parse(localStorage.getItem("savedInternships")) || [];
 
     let updated;
-    if (saved.includes(job.id)) {
-      updated = saved.filter((id) => id !== job.id);
+    if (saved.includes(internship.id)) {
+      updated = saved.filter((id) => id !== internship.id);
     } else {
-      updated = [...saved, job.id];
+      updated = [...saved, internship.id];
     }
 
-    localStorage.setItem("savedJobs", JSON.stringify(updated));
+    localStorage.setItem("savedInternships", JSON.stringify(updated));
     setIsSaved(!isSaved);
   };
 
   return (
-    <div
-      className="
-        bg-white rounded-2xl border border-gray-200
-        shadow-sm hover:shadow-lg
-        hover:-translate-y-1 hover:border-green-600
-        transition p-6 flex flex-col gap-4
-      "
-    >
-      {/* ===== Top Section ===== */}
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition p-6 flex flex-col gap-4">
+
+      {/* Top Section */}
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
           <img
-            src={job.logo}
-            alt={job.company}
+            src={internship.logo}
+            alt={internship.company}
             className="w-10 h-10 rounded-lg object-contain"
           />
-
           <div>
-            <p className="text-sm text-gray-500">{job.company}</p>
+            <p className="text-sm text-gray-500">{internship.company}</p>
             <h2 className="text-lg font-semibold text-gray-900">
-              {job.role}
+              {internship.role}
             </h2>
           </div>
         </div>
 
-        <button onClick={toggleBookmark} className="transition">
+        <button
+          onClick={toggleBookmark}
+          className="transition"
+        >
           <Heart
             size={20}
             className={
@@ -63,27 +59,25 @@ const JobCard = ({ job }) => {
         </button>
       </div>
 
-      {/* ===== Meta Info ===== */}
+      {/* Meta Info */}
       <div className="flex flex-wrap gap-3 text-sm text-gray-600">
         <span className="flex items-center gap-1">
-          <MapPin size={15} />
-          {job.location}
+          <MapPin size={15} /> {internship.location}
         </span>
-
         <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-          {job.type}
+          {internship.ctc}
         </span>
       </div>
 
-      {/* ===== Salary ===== */}
+      {/* Salary */}
       <div className="flex items-center gap-2 text-gray-800 font-medium">
         <IndianRupee size={18} />
-        {job.ctc}
+        {internship.stipend} / month
       </div>
 
-      {/* ===== Skills ===== */}
+      {/* Skills */}
       <div className="flex flex-wrap gap-2">
-        {job.skills.slice(0, 3).map((skill, index) => (
+        {internship.skills.slice(0, 3).map((skill, index) => (
           <span
             key={index}
             className="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full"
@@ -91,25 +85,24 @@ const JobCard = ({ job }) => {
             {skill}
           </span>
         ))}
-
-        {job.skills.length > 3 && (
+        {internship.skills.length > 3 && (
           <span className="bg-blue-50 text-blue-600 text-xs px-3 py-1 rounded-full cursor-pointer">
-            +{job.skills.length - 3} more
+            +{internship.skills.length - 3} more
           </span>
         )}
       </div>
 
-      {/* ===== Posted Info ===== */}
-      <p className="text-sm text-gray-600">
-        Posted {job.postedDate} · {job.daysLeft} days left
+      {/* Description */}
+      <p className="text-sm text-gray-600 line-clamp-2">
+        {internship.description}
       </p>
 
-      {/* ===== Apply Button ===== */}
-      <button className="mt-3 w-full bg-green-700 hover:bg-green-800 text-white py-2.5 rounded-xl font-medium transition flex items-center justify-center gap-2">
+      {/* Apply Button */}
+      <button className="mt-3 w-full bg-green-700 hover:bg-green-800 text-white py-2.5 rounded-xl font-medium transition flex  items-center justify-center gap-2">
         Apply Now →
       </button>
     </div>
   );
 };
 
-export default JobCard;
+export default InternshipCard;

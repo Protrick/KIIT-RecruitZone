@@ -8,6 +8,7 @@ import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import Jobs from "./pages/Jobs";
 import AuthPage from "./components/Authpage";
+import Internship from "./pages/Internships";
 
 function App() {
   // const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -24,8 +25,7 @@ function App() {
             <Route path="/admin" element={<Admin />} />
             <Route path="/dashboard/*" element={<Dashboard />} />
             <Route path="/dashboard/jobs" element={<Jobs />} />
-
-          
+            <Route path="/dashboard/internships" element={<Internship />} />
           </Routes>
         </>
       {/* ) : (

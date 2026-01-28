@@ -1,6 +1,6 @@
 import { Filter, ChevronDown, ArrowUpDown, X } from "lucide-react";
 
-const FilterBar = ({ filters, setFilters }) => {
+const InternshipFilter = ({ filters, setFilters }) => {
   const activeCount = Object.values(filters).filter(v => v !== "").length;
 
   const clearFilters = () => {
@@ -115,4 +115,4 @@ const FilterBar = ({ filters, setFilters }) => {
   );
 };
 
-export default FilterBar;
+export default InternshipFilter;
