@@ -23,6 +23,7 @@ import Home from "./Home";
 import Companies from "./Companies";
 import Events from "./Events";
 import Admin from "./Admin";
+import Job from "./components/Job";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/companies" element={<Companies />} />
         <Route path="/events" element={<Events />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/jobs" element={<Job />} />
       </Routes>
     </Router>
   );
