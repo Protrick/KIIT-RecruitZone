@@ -14,7 +14,7 @@ const Companies = () => {
       {companies.map((company, index) => (
         <CompanyCard key={index} company={company} />
       ))}
-    </div>
+    </div> 
   );
 };
 
