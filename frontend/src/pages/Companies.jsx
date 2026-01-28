@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import CompanyCard from "./Companycard";
-import companiesData from "./data/Companies.json";
+import CompanyCard from "../components/Companycard";
+import companiesData from "../data/Companies.json";
 
 const Companies = () => {
   const [companies, setCompanies] = useState([]);
@@ -14,7 +14,7 @@ const Companies = () => {
       {companies.map((company, index) => (
         <CompanyCard key={index} company={company} />
       ))}
-    </div>
+    </div> 
   );
 };
 

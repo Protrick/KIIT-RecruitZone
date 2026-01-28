@@ -1,41 +1,36 @@
-// import EventCard from "./EventCard"
-// import Navbar from "./Navbar"
-// import CompanyCard from "./CompanyCard"
-
-// function App() {
-  
-//   return (
-//     <>
-//       <Navbar />
-//       <CompanyCard />
-//       <EventCard />
-//     </>
-//   )
-// }
-
-// export default App
-
-
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./Navbar";
-import Home from "./Home";
-import Companies from "./Companies";
-import Events from "./Events";
-import Admin from "./Admin";
-import Job from "./components/Job";
+
+import Home from "./pages/Home";
+import Companies from "./pages/Companies";
+import Events from "./pages/Events";
+import Admin from "./pages/Admin";
+import Dashboard from "./pages/Dashboard";
+import Jobs from "./pages/Jobs";
+import AuthPage from "./components/Authpage";
 
 function App() {
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/companies" element={<Companies />} />
-        <Route path="/events" element={<Events />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/jobs" element={<Job />} />
-      </Routes>
+      {/* Authentication temporarily disabled for development */}
+      {/* {isAuthenticated ? ( */}
+        <>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/companies" element={<Companies />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/dashboard/*" element={<Dashboard />} />
+            <Route path="/dashboard/jobs" element={<Jobs />} />
+
+          
+          </Routes>
+        </>
+      {/* ) : (
+        <AuthPage onLogin={() => setIsAuthenticated(true)} />
+      )} */}
     </Router>
   );
 }
