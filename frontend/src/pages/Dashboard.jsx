@@ -215,6 +215,81 @@ const Dashboard = () => {
               </div>
             </Link>
 
+            {/* Prepare for interview Card */}
+
+            <Link 
+  to="/dashboard/prepare-interview"
+  className="group relative bg-white/95 backdrop-blur-md rounded-3xl p-8 w-80 shadow-2xl hover:shadow-[0_25px_60px_-15px_rgba(31,170,89,0.4)] hover:scale-[1.02] hover:-translate-y-2 transition-all duration-500 cursor-pointer border border-white/30 overflow-hidden"
+>
+  {/* Card Glow Effect */}
+  <div className="absolute inset-0 bg-gradient-to-br from-[#1FAA59]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
+  
+  {/* Badge */}
+  <div className="absolute top-4 right-4 bg-[#1FAA59]/10 text-[#1FAA59] text-xs font-semibold px-3 py-1 rounded-full">
+    300+ Questions
+  </div>
+  
+  <div className="relative flex flex-col items-center text-center">
+    
+    {/* Interview Icon */}
+    <div className="w-20 h-20 bg-gradient-to-br from-[#1FAA59] to-[#178f4a] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg shadow-[#1FAA59]/30">
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        className="w-10 h-10 text-white" 
+        fill="none" 
+        viewBox="0 0 24 24" 
+        stroke="currentColor"
+        strokeWidth={1.5}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5l5 5v11a2 2 0 01-2 2z" />
+      </svg>
+    </div>
+    
+    <h3 className="text-2xl font-bold text-gray-800 mb-2">
+      Prepare for Interview
+    </h3>
+    
+    <p className="text-gray-500 text-sm mb-5 leading-relaxed">
+      Practice DSA, Reasoning and Quantitative Aptitude to crack your dream placement
+    </p>
+    
+    {/* Stats */}
+    <div className="flex items-center gap-4 mb-5 text-sm">
+      
+      <div className="flex items-center gap-1 text-gray-600">
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 20h.01M12 4h.01" />
+        </svg>
+        <span>DSA</span>
+      </div>
+
+      <div className="flex items-center gap-1 text-gray-600">
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-6h13M9 11l3-3m0 0l-3-3m3 3H3" />
+        </svg>
+        <span>Reasoning</span>
+      </div>
+
+      <div className="flex items-center gap-1 text-gray-600">
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+        </svg>
+        <span>Quantitative</span>
+      </div>
+
+    </div>
+    
+    {/* CTA Button */}
+    <div className="w-full bg-gradient-to-r from-[#1FAA59] to-[#178f4a] text-white py-3 px-6 rounded-xl font-semibold flex items-center justify-center gap-2 group-hover:gap-3 transition-all shadow-lg shadow-[#1FAA59]/25">
+      <span>Start Practice</span>
+      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+      </svg>
+    </div>
+
+  </div>
+</Link>
+
           </div>
           
           {/* Bottom Stats Bar */}
