@@ -1,227 +1,193 @@
-import React, { useState } from "react";
-// problemsData.json exports an array as the default value; import it accordingly
-import problemsData from "../data/problemsData.json";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import KIITHeader from "../assets/kiit-header.png";
-import reasoningData from "../data/reasoningData.json";
-import quantitativeData from "../data/quantitativeData.json";
-import { useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-
-
+import axios from "axios";
 
 const DSAProblems = () => {
+  const location = useLocation();
+  const selectedCategory = location.state?.category || "dsa";
+
   const [difficulty, setDifficulty] = useState("");
   const [topic, setTopic] = useState("");
   const [company, setCompany] = useState("");
   const [search, setSearch] = useState("");
-  const location = useLocation();
-  const selectedCategory = location.state?.category || "dsa";
+  const [problemsData, setProblemsData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  //  Fetch Problems From Backend
+  useEffect(() => {
+    const fetchProblems = async () => {
+      try {
+        setLoading(true);
 
-  const getData = () => {
-    if (selectedCategory === "reasoning") return reasoningData;
-    if (selectedCategory === "quantitative") return quantitativeData;
-    return problemsData;
-  };
+        const { data } = await axios.get(
+          "http://localhost:5000/api/problems",
+          {
+            params: {
+              category: selectedCategory,
+              difficulty,
+              topic,
+              company,
+              search,
+            },
+          }
+        );
 
-  const problems = getData();
+        setProblemsData(data);
+      } catch (error) {
+        console.error(
+          "Error fetching problems:",
+          error.response?.data || error.message
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
 
-
-
-
-  const filteredProblems = problems.filter((problem) => {
-    return (
-      (difficulty ? problem.difficulty === difficulty : true) &&
-      (topic ? problem.topic === topic : true) &&
-      (company ? problem.company === company : true) &&
-      problem.title.toLowerCase().includes(search.toLowerCase())
-    );
-  });
+    fetchProblems();
+  }, [selectedCategory, difficulty, topic, company, search]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f4fbf7] ">
-        {/* Navbar */}
-                  <nav className="bg-white shadow-md px-6 py-4 flex items-center justify-between mb-4">
-                    {/* Left side - KIIT Header Image */}
-                    <div className="flex items-center">
-                      <img 
-                        src={KIITHeader} 
-                        alt="KIIT - Kalinga Institute of Industrial Technology" 
-                        className="h-12 object-contain"
-                      />
-                    </div>
-            
-                    {/* Right side - Nav Links + Profile Avatar */}
-                    <div className="flex items-center gap-6">
-                      {/* Nav Links */}
-                      <div className="flex items-center gap-1">
-                        <Link 
-                          to="/dashboard" 
-                          className="flex items-center gap-2 px-4 py-2 rounded-full font-medium text-gray-700 hover:bg-[#1FAA59] hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#1FAA59]/25"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                          </svg>
-                          Home
-                        </Link>
-                        <Link 
-                          to="/dashboard/internships" 
-                          className="flex items-center gap-2 px-4 py-2 rounded-full font-medium text-gray-700 hover:bg-[#1FAA59] hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#1FAA59]/25"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                          </svg>
-                          Internships
-                        </Link>
-                        <Link 
-                          to="/dashboard/jobs" 
-                          className="flex items-center gap-2 px-4 py-2 rounded-full font-medium text-gray-700 hover:bg-[#1FAA59] hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#1FAA59]/25"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                          </svg>
-                          Jobs
-                        </Link>
-                      </div>
-            
-                      {/* Divider */}
-                      <div className="w-px h-8 bg-gray-200" />
-            
-                      {/* Profile Avatar */}
-                      <button className="relative group flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gray-100 transition-all duration-300">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1FAA59] to-[#006838] flex items-center justify-center text-white font-semibold text-lg shadow-md group-hover:shadow-lg transition-shadow">
-                          P
-                        </div>
-                        <div className="hidden sm:flex flex-col items-start">
-                          <span className="text-sm font-medium text-gray-800">Pratik</span>
-                          <span className="text-xs text-gray-500">Student</span>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-500 group-hover:text-gray-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
-                    </div>
-                  </nav>
+    <div className="min-h-screen flex flex-col bg-[#f4fbf7]">
       
+      {/* Navbar */}
+      <nav className="bg-white shadow-md px-6 py-4 flex items-center justify-between mb-8">
+        <img
+          src={KIITHeader}
+          alt="KIIT"
+          className="h-12 object-contain"
+        />
+
+        <div className="flex items-center gap-6">
+          <Link to="/dashboard" className="nav-link">Home</Link>
+          <Link to="/dashboard/internships" className="nav-link">Internships</Link>
+          <Link to="/dashboard/jobs" className="nav-link">Jobs</Link>
+        </div>
+      </nav>
+
       {/* Header */}
       <div className="max-w-6xl mx-auto mb-10">
         <h1 className="text-4xl font-extrabold text-gray-900 mb-2 capitalize">
-  {selectedCategory} Practice Problems
-</h1>
-
-<p className="text-gray-600">
-  Practice curated {selectedCategory} problems
-</p>
+          {selectedCategory} Practice Problems
+        </h1>
+        <p className="text-gray-600">
+          Practice curated {selectedCategory} problems
+        </p>
       </div>
 
-      {/* Filter Section */}
-      <div className="max-w-6xl mx-auto bg-white/90 backdrop-blur-md rounded-3xl p-6 shadow-xl mb-8">
-        <div className="grid md:grid-cols-4 gap-6">
+      <main className="flex-1 max-w-6xl mx-auto px-4 grow">
 
-          <input
-            type="text"
-            placeholder="Search problem..."
-            className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#1FAA59]"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        {/* Filters */}
+        <div className="bg-white rounded-3xl p-6 shadow-xl mb-8">
+          <div className="grid md:grid-cols-4 gap-6">
 
-          <select
-            className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#1FAA59]"
-            value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value)}
-          >
-            <option value="">All Difficulty</option>
-            <option>Easy</option>
-            <option>Medium</option>
-            <option>Hard</option>
-          </select>
-          <select
-            className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#1FAA59]"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-          >
-            <option value="">All Topics</option>
-           {[...new Set(problems.map((p) => p.topic))].map(
-          (uniqueTopic, index) => (
-          <option key={index}>{uniqueTopic}</option>
-           ))}
-          </select>
+            <input
+              type="text"
+              placeholder="Search problem..."
+              className="border rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#1FAA59]"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
 
-          <select
-            className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#1FAA59]"
-            value={company}
-            onChange={(e) => setCompany(e.target.value)}
-          >
-            <option value="">All Companies</option>
-            {[...new Set(problems.map((p) => p.company))].map(
-            (uniqueCompany, index) => (
-            <option key={index}>{uniqueCompany}</option>
-           ))}
+            <select
+              className="border rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#1FAA59]"
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+            >
+              <option value="">All Difficulty</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
             </select>
 
-        </div>
-      </div>
+            <select
+              className="border rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#1FAA59]"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+            >
+              <option value="">All Topics</option>
+              {[...new Set(problemsData.map((p) => p.topic))].map(
+                (uniqueTopic, index) => (
+                  <option key={index} value={uniqueTopic}>
+                    {uniqueTopic}
+                  </option>
+                )
+              )}
+            </select>
 
-      {/* Table Section */}
-      <div className="max-w-6xl mx-auto bg-white/90 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden">
-        
-        <table className="w-full">
-          <thead className="bg-[#1FAA59]/10 text-[#1FAA59]">
-            <tr className="text-left">
-              <th className="py-4 px-6">Problem</th>
-              <th className="py-4 px-6">Topic</th>
-              <th className="py-4 px-6">Difficulty</th>
-              <th className="py-4 px-6">Company</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredProblems.map((problem, index) => (
-              <tr
-                key={problem.id}
-                className={`border-t ${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                } hover:bg-[#1FAA59]/5 transition`}
-              >
-                <td className="py-4 px-6 font-medium text-gray-800">
-                  {problem.title}
-                </td>
-                <td className="py-4 px-6 text-gray-600">
-                  {problem.topic}
-                </td>
-                <td className="py-4 px-6">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      problem.difficulty === "Easy"
-                        ? "bg-green-100 text-green-700"
-                        : problem.difficulty === "Medium"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >{problem.difficulty}
-                  </span>
-                </td>
-                <td className="py-4 px-6 text-gray-600">
-                  {problem.company}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {filteredProblems.length === 0 && (
-          <div className="text-center py-10 text-gray-500">
-            No problems found.
+            <select
+              className="border rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#1FAA59]"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+            >
+              <option value="">All Companies</option>
+              {[...new Set(problemsData.map((p) => p.company))].map(
+                (uniqueCompany, index) => (
+                  <option key={index} value={uniqueCompany}>
+                    {uniqueCompany}
+                  </option>
+                )
+              )}
+            </select>
           </div>
-        )}
-      </div>
+        </div>
 
+        {/* Table */}
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
 
-
-      
+          {loading ? (
+            <div className="text-center py-10 text-gray-500">
+              Loading problems...
+            </div>
+          ) : problemsData.length === 0 ? (
+            <div className="text-center py-10 text-gray-500">
+              No problems found.
+            </div>
+          ) : (
+            <table className="w-full">
+              <thead className="bg-[#1FAA59]/10 text-[#1FAA59]">
+                <tr className="text-left">
+                  <th className="py-4 px-6">Problem</th>
+                  <th className="py-4 px-6">Topic</th>
+                  <th className="py-4 px-6">Difficulty</th>
+                  <th className="py-4 px-6">Company</th>
+                </tr>
+              </thead>
+              <tbody>
+                {problemsData.map((problem, index) => (
+                  <tr
+                    key={problem._id}
+                    className={`border-t ${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-[#1FAA59]/5 transition`}
+                  >
+                    <td className="py-4 px-6 font-medium">
+                      {problem.title}
+                    </td>
+                    <td className="py-4 px-6">{problem.topic}</td>
+                    <td className="py-4 px-6">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          problem.difficulty === "Easy"
+                            ? "bg-green-100 text-green-700"
+                            : problem.difficulty === "Medium"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {problem.difficulty}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6">{problem.company}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </main>
       {/* Footer */}
-      <footer className="mx-2 mb-2 rounded-b-3xl bg-[#111827] text-white px-8 py-6 mt-4">
+      <footer className="mx-2 mb-2 rounded-b-3xl bg-[#111827] text-white px-8 py-6 mt-8">
         {/* Top Border Accent */}
         <div className="flex items-center gap-4 mb-5">
           <div className="h-1 w-12 bg-gradient-to-r from-[#1FAA59] to-[#006838] rounded-full" />

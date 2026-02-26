@@ -101,7 +101,7 @@ const PrepareInterview = () => {
 
           {/* ================= DSA Card ================= */}
 <Link
-  to="/practice"
+  to="/problems"
   state={{ category: "dsa" }}
   className="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-[0_20px_50px_-10px_rgba(31,170,89,0.3)] transition-all duration-500 hover:-translate-y-2 "
 >
@@ -129,7 +129,7 @@ const PrepareInterview = () => {
 
           {/* ================= Reasoning Card ================= */}
 <Link
-  to="/practice"
+  to="/problems"
   state={{ category: "reasoning" }}
   className="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-[0_20px_50px_-10px_rgba(31,170,89,0.3)] transition-all duration-500 hover:-translate-y-2"
 >
@@ -157,7 +157,7 @@ const PrepareInterview = () => {
 
           {/* ================= Quantitative Card ================= */}
 <Link
-  to="/practice"
+  to="/problems"
   state={{ category: "quantitative" }}
   className="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-[0_20px_50px_-10px_rgba(31,170,89,0.3)] transition-all duration-500 hover:-translate-y-2"
 >

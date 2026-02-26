@@ -31,7 +31,7 @@ function App() {
             <Route path="/dashboard/internships" element={<Internship />} />
             <Route path="/dashboard/prepare-interview" element={<PrepareInterview />} />
             {/*<Route path="/dashboard/prepare-interview/:category" element={<DSAProblems />} /> */}
-            <Route path="/practice" element={<DSAProblems />} />
+            <Route path="/problems" element={<DSAProblems />} />
 
           </Routes>
         </>
