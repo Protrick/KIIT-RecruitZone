@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "title": "Two Sum",
+    "difficulty": "Easy",
+    "topic": "Array",
+    "company": "Amazon"
+  },
+  {
+    "id": 2,
+    "title": "Reverse Linked List",
+    "difficulty": "Easy",
+    "topic": "Linked List",
+    "company": "Microsoft"
+  },
+  {
+    "id": 3,
+    "title": "Longest Substring Without Repeating Characters",
+    "difficulty": "Medium",
+    "topic": "String",
+    "company": "Google"
+  },
+  {
+    "id": 4,
+    "title": "Merge Intervals",
+    "difficulty": "Medium",
+    "topic": "Array",
+    "company": "Amazon"
+  },
+  {
+    "id": 5,
+    "title": "Binary Tree Level Order Traversal",
+    "difficulty": "Medium",
+    "topic": "Tree",
+    "company": "Meta"
+  },
+  {
+    "id": 6,
+    "title": "LRU Cache",
+    "difficulty": "Hard",
+    "topic": "Design",
+    "company": "Google"
+  },
+  {
+    "id": 7,
+    "title": "Detect Cycle in Graph",
+    "difficulty": "Hard",
+    "topic": "Graph",
+    "company": "Microsoft"
+  },
+  {
+    "id": 8,
+    "title": "Valid Parentheses",
+    "difficulty": "Easy",
+    "topic": "Stack",
+    "company": "Adobe"
+  },
+  {
+    "id": 9,
+    "title": "Kth Largest Element",
+    "difficulty": "Medium",
+    "topic": "Heap",
+    "company": "Amazon"
+  },
+  {
+    "id": 10,
+    "title": "Word Break",
+    "difficulty": "Hard",
+    "topic": "Dynamic Programming",
+    "company": "Netflix"
+  }
+]

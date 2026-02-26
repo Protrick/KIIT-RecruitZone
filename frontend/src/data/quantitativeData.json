@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "title": "Profit and Loss Basics",
+    "difficulty": "Easy",
+    "topic": "Profit & Loss",
+    "company": "TCS"
+  },
+  {
+    "id": 2,
+    "title": "Simple Interest Calculation",
+    "difficulty": "Easy",
+    "topic": "Interest",
+    "company": "Infosys"
+  },
+  {
+    "id": 3,
+    "title": "Time and Work Problem",
+    "difficulty": "Medium",
+    "topic": "Time & Work",
+    "company": "Wipro"
+  },
+  {
+    "id": 4,
+    "title": "Speed, Time and Distance",
+    "difficulty": "Medium",
+    "topic": "Speed & Distance",
+    "company": "Accenture"
+  },
+  {
+    "id": 5,
+    "title": "Permutation and Combination",
+    "difficulty": "Hard",
+    "topic": "Probability",
+    "company": "Amazon"
+  },
+  {
+    "id": 6,
+    "title": "Probability of Cards",
+    "difficulty": "Hard",
+    "topic": "Probability",
+    "company": "Google"
+  },
+  {
+    "id": 7,
+    "title": "Ratio and Proportion",
+    "difficulty": "Easy",
+    "topic": "Ratio",
+    "company": "Capgemini"
+  },
+  {
+    "id": 8,
+    "title": "Number System LCM HCF",
+    "difficulty": "Medium",
+    "topic": "Number System",
+    "company": "Microsoft"
+  },
+  {
+    "id": 9,
+    "title": "Mixture and Allegation",
+    "difficulty": "Medium",
+    "topic": "Mixture",
+    "company": "Infosys"
+  },
+  {
+    "id": 10,
+    "title": "Advanced Probability Case",
+    "difficulty": "Hard",
+    "topic": "Probability",
+    "company": "Goldman Sachs"
+  }
+]
