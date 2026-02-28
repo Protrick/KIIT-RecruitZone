@@ -1,8 +1,12 @@
 const Society = require("../models/Society");
 
 exports.getSocieties = async (req, res) => {
-  const societies = await Society.find();
-  res.json(societies);
+  try {
+    const societies = await Society.find();
+    res.json(societies);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 exports.createSociety = async (req, res) => {

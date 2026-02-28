@@ -5,6 +5,7 @@ import KIITHeader from "../assets/kiit-header.png";
 import { Link } from "react-router-dom";
 import EventModal from "../components/EventModal";
 import { useEffect } from "react";
+import { getEvents } from "../api/societyApi";
 
 const Societies = () => {
   const [search, setSearch] = useState("");
@@ -26,9 +27,9 @@ const Societies = () => {
     };
   }, [selectedEvent]);
 
-  const filteredEvents = societiesData.filter((event) => {
+  const filteredEvents = events.filter((event) => {
     return (
-      (filter === "All" || event.tag === filter) &&
+      (filter === "All" || event.category === filter) &&
       event.societyName.toLowerCase().includes(search.toLowerCase())
     );
   });
@@ -172,9 +173,9 @@ const Societies = () => {
 
       {/* Cards Grid */}
       <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        {filteredEvents.slice(0, visibleCount).map((event) => (
+        {filteredEvents.slice(0, visibleCount).map((event, index) => (
           <SocietyCard
-            key={event._id}
+            key={event._id || index}
             event={event}
             onMoreDetails={setSelectedEvent}
           />

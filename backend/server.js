@@ -14,7 +14,7 @@ app.use(express.json());
 app.use("/api/societies", require("./routes/societyRoutes"));
 app.use("/api/events", require("./routes/eventRoutes"));
 app.use("/api/register", require("./routes/registrationRoutes"));
+app.use("/api/problems", require("./routes/problemRoutes"));
 
-app.listen(process.env.PORT || 5000, () =>
-  console.log("Server running on port 5000")
-);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

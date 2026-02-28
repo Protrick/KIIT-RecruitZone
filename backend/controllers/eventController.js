@@ -29,16 +29,25 @@ exports.registerForEvent = async (req, res) => {
 };
 
 exports.getEvents = async (req, res) => {
-  const events = await Event.find().populate("society");
-  res.json(events);
+  try {
+    const events = await Event.find();
+    res.json(events);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 exports.getEventsBySociety = async (req, res) => {
-  const events = await Event.find({
-    society: req.params.societyId
-  }).populate("society");
+  try {
+    const events = await Event.find({
+      societyName: req.params.societyId // or however you're filtering
+    });
 
-  res.json(events);
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 exports.createEvent = async (req, res) => {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import InternshipCard from "../components/InternshipCard";
 import InternshipFilter from "../components/InternshipFilter";
-import internshipsData from "../data/internships.json";
+import internshipsData from "../data/Internships.json";
 import { Link } from "react-router-dom";
 import KIITHeader from "../assets/kiit-header.png";
 

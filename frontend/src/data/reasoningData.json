@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "title": "Seating Arrangement Puzzle",
+    "difficulty": "Easy",
+    "topic": "Seating Arrangement",
+    "company": "TCS"
+  },
+  {
+    "id": 2,
+    "title": "Blood Relation Problem",
+    "difficulty": "Easy",
+    "topic": "Blood Relations",
+    "company": "Infosys"
+  },
+  {
+    "id": 3,
+    "title": "Syllogism Statements",
+    "difficulty": "Medium",
+    "topic": "Syllogism",
+    "company": "Wipro"
+  },
+  {
+    "id": 4,
+    "title": "Coding-Decoding Pattern",
+    "difficulty": "Medium",
+    "topic": "Coding-Decoding",
+    "company": "Accenture"
+  },
+  {
+    "id": 5,
+    "title": "Logical Venn Diagram",
+    "difficulty": "Medium",
+    "topic": "Venn Diagram",
+    "company": "Capgemini"
+  },
+  {
+    "id": 6,
+    "title": "Direction Sense Test",
+    "difficulty": "Easy",
+    "topic": "Direction Sense",
+    "company": "TCS"
+  },
+  {
+    "id": 7,
+    "title": "Data Sufficiency Case I",
+    "difficulty": "Hard",
+    "topic": "Data Sufficiency",
+    "company": "Amazon"
+  },
+  {
+    "id": 8,
+    "title": "Statement & Assumption",
+    "difficulty": "Hard",
+    "topic": "Critical Reasoning",
+    "company": "Google"
+  },
+  {
+    "id": 9,
+    "title": "Number Series Pattern",
+    "difficulty": "Medium",
+    "topic": "Series",
+    "company": "Infosys"
+  },
+  {
+    "id": 10,
+    "title": "Puzzle on Floor Arrangement",
+    "difficulty": "Hard",
+    "topic": "Seating Arrangement",
+    "company": "Microsoft"
+  }
+]
