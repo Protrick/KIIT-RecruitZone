@@ -11,7 +11,7 @@ const SocietyCard = ({ event, onMoreDetails }) => {
           alt={event.title}
           className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
         />
-        <div className="absolute top-4 right-4 bg-[#1FAA59]/10 text-[#1FAA59] text-xs font-semibold px-3 py-1 rounded-full">
+        <div className="absolute top-4 right-4 bg-[#1FAA59]/90 text-white text-xs font-semibold px-3 py-1 rounded-full">
           {event.category}
         </div>
       </div>

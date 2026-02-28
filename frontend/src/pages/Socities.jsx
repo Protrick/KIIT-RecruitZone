@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import societiesData from "../data/societiesData.json";
 import SocietyCard from "../components/SocietyCard";
 import KIITHeader from "../assets/kiit-header.png";
 import { Link } from "react-router-dom";
@@ -27,13 +26,22 @@ const Societies = () => {
     };
   }, [selectedEvent]);
 
-  const filteredEvents = events.filter((event) => {
-    return (
-      (filter === "All" || event.category === filter) &&
-      event.societyName.toLowerCase().includes(search.toLowerCase())
-    );
-  });
+  const filteredEvents = events
+  .filter((event) =>
+    event.societyName.toLowerCase().includes(search.toLowerCase())
+  )
+  .sort((a, b) => {
+    if (filter === "Latest") {
+      return new Date(b.date) - new Date(a.date);
+    }
 
+    if (filter === "Popular") {
+      return new Date(b.date) - new Date(a.date); 
+      // temporary same as latest
+    }
+
+    return 0;
+  });
   useEffect(() => {
     const fetchEvents = async () => {
       try {

@@ -24,7 +24,7 @@ const EventModal = ({ event, onClose }) => {
 };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center py-4">
 
       {/* Overlay */}
       <div
@@ -33,7 +33,7 @@ const EventModal = ({ event, onClose }) => {
       />
 
       {/* Modal Card */}
-      <div className="relative bg-white rounded-3xl shadow-2xl w-[95%] md:w-[600px] z-50">
+      <div className="relative bg-white rounded-3xl shadow-2xl w-[95%] md:w-[600px] z-50 max-h-[85vh] overflow-y-auto">
 
         {/* Image */}
         <div className="relative">
