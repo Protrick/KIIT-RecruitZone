@@ -1247,13 +1247,6 @@ export default function AdminPanel() {
 
       {/* ── HEADER ── */}
       <header className="hdr">
-        <div className="hdr-strip">
-          <span>Kalinga Institute of Industrial Technology · Bhubaneswar, Odisha</span>
-          <div className="hdr-strip-right">
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#7dff9a', display: 'inline-block' }} />
-            <span>Portal Active</span>
-          </div>
-        </div>
         <div className="hdr-main">
           <div className="hdr-brand">
             <div className="hdr-text">
@@ -1263,13 +1256,7 @@ export default function AdminPanel() {
               <div className="hdr-sub">Internship &amp; Placement Administration</div>
             </div>
           </div>
-          <div className="hdr-pill">
-            <div className="stat-pill">
-              <div className="stat-dot" />
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,.8)' }}>Active Listings</span>
-              <span className="stat-num"><Counter value={cards.length} /></span>
-            </div>
-          </div>
+          
         </div>
       </header>
 
@@ -1468,104 +1455,8 @@ export default function AdminPanel() {
                 {busy ? <><div className="spinner" /> Publishing…</> : <><Save size={16} /> Add Internship</>}
               </button>
             </div>
-
           </form>
         </div>
-
-        {/* ══════════ SIDEBAR ══════════ */}
-        <div className="sidebar">
-          <div className="scard" ref={sideRef}>
-            <div className="shdr">
-              <span className="stitle">Recent Additions</span>
-              <span className="sbadge"><Counter value={cards.length} /></span>
-            </div>
-
-            {cards.length === 0 ? (
-              <div className="empty">
-                <AlertCircle size={50} color="#d0d8d0" className="empty-ico" />
-                <p style={{ fontSize: 14, color: '#bbb', fontWeight: 500, marginBottom: 6 }}>No listings published yet</p>
-                <p style={{ fontSize: 12, color: '#ccc' }}>Complete the form on the left to add your first internship.</p>
-              </div>
-            ) : (
-              <div className="jlist">
-                {cards.map((c, i) => (
-                  <div key={c.id} className={'jcard' + (exitId === c.id ? ' out' : '')}
-                    style={{ animationDelay: (i === 0 ? 0 : Math.min(i * 45, 200)) + 'ms' }}>
-
-                    {/* Category ribbon */}
-                    <div className="cat-ribbon">{c.category}</div>
-
-                    <div className="jcard-inner">
-                      {/* Actions */}
-                      <div style={{ position: 'absolute', top: 10, right: 10, display: 'flex', gap: 5, alignItems: 'center' }}>
-                        <button className="btn-del" onClick={() => del(c.id)} title="Remove">
-                          <X size={14} color="#dc2626" />
-                        </button>
-                        <span style={{ color: '#ccc', fontSize: 18, cursor: 'pointer', lineHeight: 1, display: 'inline-block', transition: 'color .3s,transform .4s cubic-bezier(.16,1,.3,1)' }}
-                          onMouseOver={e => { e.target.style.color = '#e74c3c'; e.target.style.transform = 'scale(1.3) rotate(10deg)'; }}
-                          onMouseOut={e => { e.target.style.color = '#ccc'; e.target.style.transform = 'scale(1) rotate(0)'; }}>♡</span>
-                      </div>
-
-                      {/* Company + verified */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 6, paddingRight: 60 }}>
-                        <span style={{ fontSize: 11.5, color: '#7a8a8a', fontWeight: 500 }}>{c.companyName}</span>
-                        {c.verified && <span className="vbadge">✦ Verified</span>}
-                      </div>
-
-                      {/* Job title */}
-                      <h4 style={{ fontFamily: "'Lora',serif", fontSize: 15.5, fontWeight: 600, color: '#1a1a1a', margin: '0 0 10px', lineHeight: 1.35, paddingRight: 24 }}>
-                        {c.jobTitle}
-                      </h4>
-
-                      {/* Meta row */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10, flexWrap: 'wrap' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, color: '#778' }}>
-                          <MapPin size={12} /><span>{c.locationType}</span>
-                        </div>
-                        <span className="ctcbadge">{c.ctc}</span>
-                        <span className="typebadge">{c.type}</span>
-                      </div>
-
-                      {/* Stipend */}
-                      <div style={{ fontSize: 15.5, fontWeight: 700, color: '#1a1a1a', marginBottom: 10 }}>
-                        {c.stipend} <span style={{ fontSize: 12.5, fontWeight: 400, color: '#8a9898' }}>{c.stipendPeriod}</span>
-                      </div>
-
-                      {/* Skills */}
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 11 }}>
-                        {c.skills.slice(0, 4).map((s, idx) => <span key={idx} className="stag">{s}</span>)}
-                        {c.skills.length > 4 && <span className="stag">+{c.skills.length - 4}</span>}
-                      </div>
-
-                      {/* Description */}
-                      <p style={{ fontSize: 13, color: '#667', lineHeight: 1.62, margin: '0 0 11px', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                        {c.description}
-                      </p>
-
-                      {/* PDF */}
-                      {c.pdfFile && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 11px', background: '#fff8ec', borderRadius: 6, marginBottom: 11, fontSize: 12, color: '#c47c10', fontWeight: 500, border: '1px solid #ffe0a0' }}>
-                          <FileText size={12} /><span>{c.pdfFileName}</span>
-                        </div>
-                      )}
-
-                      {/* Footer */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 11 }}>
-                        <span style={{ fontSize: 10.5, color: '#c8c8c8' }}>{c.postedDate}</span>
-                        <span style={{ fontSize: 10.5, color: '#778', background: '#edf4ed', padding: '3px 9px', borderRadius: 5, fontWeight: 500, border: '1px solid #d0e4d0' }}>
-                          {c.daysLeft}d left
-                        </span>
-                      </div>
-
-                      <button className="btn-apply">Apply Now →</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
       </div>
     </div>
   </>);
