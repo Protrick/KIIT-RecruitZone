@@ -1,9 +1,13 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
 
-const problemRoutes = require("./routes/problemRoutes");
+dotenv.config();
+
+
+import authRoutes from "./routes/authRoutes.js";
+import companyRoutes from "./routes/companyRoutes.js";
 
 const app = express();
 
@@ -12,7 +16,10 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api/problems", problemRoutes);
+
+app.use("/api/auth", authRoutes);
+app.use("/api/company", companyRoutes);
+
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)

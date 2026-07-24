@@ -1,4 +1,4 @@
-const Problem = require("../models/Problem");
+import Problem from "../models/Problem.js";
 
 // GET problems with filters
 exports.getProblems = async (req, res) => {
