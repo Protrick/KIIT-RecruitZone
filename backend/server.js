@@ -1,20 +1,30 @@
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
+const path = require("path");
 const problemRoutes = require("./routes/problemRoutes");
+const authRoutes = require("./routes/authRoutes");
+const companyRoutes = require("./routes/companyRoutes");
+const jobRoutes = require("./routes/jobRoutes");
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use("/api/problems", problemRoutes);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// MongoDB Connection
+app.use("/api/problems", problemRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/companies", companyRoutes);
+app.use("/api/jobs", jobRoutes);
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));

@@ -1,15 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import KIITHeader from "../assets/kiit-header.png";
-import jobs from "../data/jobs.json";
+import jobsMock from "../data/jobs.json";
 import JobCard from "../components/JobCard";
 import FilterBar from "../components/FilterBar";
-
+import axios from "axios";
 
 const Jobs = () => {
   const [tab, setTab] = useState("latest");
+  const [jobsList, setJobsList] = useState([]);
 
-  const sortedJobs = [...jobs].sort(
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/jobs")
+      .then((res) => {
+        if (res.data && res.data.length > 0) {
+          const mapped = res.data.map((job) => ({
+            id: job._id,
+            logo: "https://via.placeholder.com/150",
+            company: job.company,
+            role: job.title,
+            location: job.location,
+            type: "Full-Time",
+            ctc: `${job.salary} LPA`,
+            skills: job.skillsRequired || [],
+            postedDate: new Date(job.createdAt).toLocaleDateString(),
+            daysLeft: Math.max(0, Math.ceil((new Date(job.deadline) - new Date()) / (1000 * 60 * 60 * 24)))
+          }));
+          setJobsList(mapped);
+        } else {
+          setJobsList(jobsMock);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching jobs:", err);
+        setJobsList(jobsMock);
+      });
+  }, []);
+
+  const sortedJobs = [...jobsList].sort(
     (a, b) => new Date(b.postedDate) - new Date(a.postedDate)
   );
 
@@ -38,14 +67,12 @@ const toggleBookmark = (id) => {
 const applyFilters = (jobsList) => {
   let filtered = [...jobsList];
 
-  // Type filter
   if (filters.type) {
     filtered = filtered.filter(
       (job) => job.type === filters.type
     );
   }
 
-  // Location filter
   if (filters.location) {
     filtered = filtered.filter(
       (job) =>
@@ -53,7 +80,6 @@ const applyFilters = (jobsList) => {
     );
   }
 
-  // Category filter (role OR skills)
   if (filters.category) {
     filtered = filtered.filter(
       (job) =>
@@ -64,7 +90,6 @@ const applyFilters = (jobsList) => {
     );
   }
 
-  // Sorting
   if (filters.sort === "latest") {
     filtered.sort(
       (a, b) => new Date(b.postedDate) - new Date(a.postedDate)
@@ -92,9 +117,7 @@ const baseJobs = tab === "latest" ? latestJobs : sortedJobs;
   return (
     <div className="min-h-screen flex flex-col bg-[#f4fbf7]">
       
-      {/* Navbar */}
             <nav className="bg-white shadow-md px-6 py-4 flex items-center justify-between">
-              {/* Left side - KIIT Header Image */}
               <div className="flex items-center">
                 <img 
                   src={KIITHeader} 
@@ -103,9 +126,7 @@ const baseJobs = tab === "latest" ? latestJobs : sortedJobs;
                 />
               </div>
       
-              {/* Right side - Nav Links + Profile Avatar */}
               <div className="flex items-center gap-6">
-                {/* Nav Links */}
                 <div className="flex items-center gap-1">
                   <Link 
                     to="/dashboard" 
@@ -136,10 +157,8 @@ const baseJobs = tab === "latest" ? latestJobs : sortedJobs;
                   </Link>
                 </div>
       
-                {/* Divider */}
                 <div className="w-px h-8 bg-gray-200" />
       
-                {/* Profile Avatar */}
                 <button className="relative group flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gray-100 transition-all duration-300">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1FAA59] to-[#006838] flex items-center justify-center text-white font-semibold text-lg shadow-md group-hover:shadow-lg transition-shadow">
                     P
@@ -155,7 +174,6 @@ const baseJobs = tab === "latest" ? latestJobs : sortedJobs;
               </div>
             </nav>
 
-      {/* ===== PAGE HEADER ===== */}
       <section className="text-center py-10">
         <h1 className="text-3xl font-bold text-[#006838]">
           Job Opportunities
@@ -165,7 +183,6 @@ const baseJobs = tab === "latest" ? latestJobs : sortedJobs;
         </p>
       </section>
 
-      {/* ===== TABS ===== */}
 <div className="flex justify-center mb-6">
   <div className="flex bg-white shadow-md rounded-full p-1 border border-green-200">
     
@@ -196,14 +213,12 @@ const baseJobs = tab === "latest" ? latestJobs : sortedJobs;
   </div>
 </div>
 
- {/* Filters */}
   <div className="px-6 pt-4">
     <FilterBar filters={filters} setFilters={setFilters} />
 
   </div>
 
 
-{/* ===== JOB CARDS ===== */}
 <div className="px-6 pb-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
   {displayJobs.map((job) => (
     <JobCard key={job.id} job={job} />
@@ -212,9 +227,7 @@ const baseJobs = tab === "latest" ? latestJobs : sortedJobs;
 
 
 
-      {/* Footer */}
       <footer className="mx-2 mb-2 rounded-b-3xl bg-[#111827] text-white px-8 py-6">
-        {/* Top Border Accent */}
         <div className="flex items-center gap-4 mb-5">
           <div className="h-1 w-12 bg-gradient-to-r from-[#1FAA59] to-[#006838] rounded-full" />
           <span className="text-[#1FAA59] font-semibold text-sm uppercase tracking-wider">KIIT RecruitZone</span>
@@ -222,7 +235,6 @@ const baseJobs = tab === "latest" ? latestJobs : sortedJobs;
         </div>
         
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Left - Copyright */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#1FAA59]/20 rounded-xl flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#1FAA59]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -237,7 +249,6 @@ const baseJobs = tab === "latest" ? latestJobs : sortedJobs;
             </div>
           </div>
 
-          {/* Center - Quick Links */}
           <div className="flex items-center gap-6 text-sm">
             <a href="https://kiit.ac.in" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#1FAA59] transition-colors flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -259,7 +270,6 @@ const baseJobs = tab === "latest" ? latestJobs : sortedJobs;
             </a>
           </div>
 
-          {/* Right - Social/Info */}
           <div className="flex items-center gap-4">
             <span className="text-xs text-gray-500 hidden md:block">Training & Placement Cell</span>
             <div className="flex gap-2">
