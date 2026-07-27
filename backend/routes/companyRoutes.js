@@ -1,16 +1,26 @@
-import express from "express";
-import * as companyController from "../controllers/companyController.js";
+const express = require("express");
+
+const {
+  getCompanies,
+  getCompanyById,
+  createCompany,
+  updateCompany,
+  deleteCompany,
+} = require("../Controllers/companyController");
+
+const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.post("/", companyController.createCompany);
+router
+  .route("/")
+  .get(getCompanies)
+  .post(protect, adminOnly, createCompany);
 
-router.get("/", companyController.getCompanies);
+router
+  .route("/:id")
+  .get(getCompanyById)
+  .put(protect, adminOnly, updateCompany)
+  .delete(protect, adminOnly, deleteCompany);
 
-router.get("/:id", companyController.getCompany);
-
-router.put("/:id", companyController.updateCompany);
-
-router.delete("/:id", companyController.deleteCompany);
-
-export default router;
+module.exports = router;

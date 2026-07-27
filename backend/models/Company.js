@@ -1,68 +1,48 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const companySchema = new mongoose.Schema(
   {
     companyName: {
       type: String,
       required: true,
+      trim: true,
     },
-
-    role: {
+    logo: {
       type: String,
-      required: true,
+      default: "",
     },
-
-    location: {
-      type: String,
-      required: true,
-    },
-
-    jobType: {
-      type: String,
-      enum: ["Full Time", "Internship", "Internship + PPO"],
-      required: true,
-    },
-
-    package: {
-      type: String,
-      required: true,
-    },
-
-    skills: [
+    roles: [
       {
         type: String,
       },
     ],
-
-    description: {
-      type: String,
-      default: "",
-    },
-
-    companyLogo: {
-      type: String,
-      default: "",
-    },
-
-    applyLink: {
-      type: String,
+    ctc: {
+      type: Number,
       required: true,
     },
-
-    postedDate: {
-      type: Date,
-      default: Date.now,
+    eligibilityCriteria: {
+      minCGPA: {
+        type: Number,
+        default: 0.0,
+      },
+      allowedBranches: [
+        {
+          type: String,
+        },
+      ],
     },
-
-    lastDateToApply: {
+    driveDate: {
       type: Date,
       required: true,
     },
-
+    deadline: {
+      type: Date,
+      required: true,
+    },
     status: {
       type: String,
-      enum: ["Latest", "Open", "Closed"],
-      default: "Open",
+      enum: ["Upcoming", "Ongoing", "Closed"],
+      default: "Upcoming",
     },
   },
   {
@@ -70,4 +50,4 @@ const companySchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("Company", companySchema);
+module.exports = mongoose.model("Company", companySchema);

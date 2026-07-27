@@ -1,30 +1,34 @@
-import express from "express";
-import mongoose from "mongoose";
-import cors from "cors";
-import dotenv from "dotenv";
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
-dotenv.config();
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv").config();
 
+const path = require("path");
 
-import authRoutes from "./routes/authRoutes.js";
-import companyRoutes from "./routes/companyRoutes.js";
+const problemRoutes = require("./routes/problemRoutes");
+const authRoutes = require("./routes/authRoutes");
+const companyRoutes = require("./routes/companyRoutes");
+const jobRoutes = require("./routes/jobRoutes");
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+app.use("/api/problems", problemRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/company", companyRoutes);
+app.use("/api/companies", companyRoutes);
+app.use("/api/jobs", jobRoutes);
 
-
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
+  .catch((err) => console.log(err));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
