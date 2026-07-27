@@ -7,12 +7,21 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
-    unique: true
+    required: [true,'Email is required'],
+    lowercase:true,
+    unique: true,
+    match:[/^[A-Za-z0-9._%+-]+@kiit\.ac\.in$/,'Please give a valid email address'],
   },
   password: {
     type: String,
-    required: true
+    required: [true,'Password is required'],
+    minlength:[6,'Password must be at least 6 characters']
+  },
+  role:{
+    type:String,
+    enum:['Student','Admin'],
+    default:'Student'
+    
   }
 });
 
