@@ -2,7 +2,15 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const { registerUser, loginUser, updateUserProfile } = require("../Controllers/authController");
+
+const {
+  registerUser,
+  loginUser,
+  updateUserProfile,
+  refreshToken,
+  logout,
+} = require("../Controllers/authController");
+
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -19,7 +27,9 @@ const storage = multer.diskStorage({
   filename(req, file, cb) {
     cb(
       null,
-      `resume-${req.user._id}-${Date.now()}${path.extname(file.originalname)}`
+      `resume-${req.user._id}-${Date.now()}${path.extname(
+        file.originalname
+      )}`
     );
   },
 });
@@ -29,7 +39,9 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter(req, file, cb) {
     const filetypes = /pdf|doc|docx/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const extname = filetypes.test(
+      path.extname(file.originalname).toLowerCase()
+    );
     const mimetype =
       file.mimetype === "application/pdf" ||
       file.mimetype === "application/msword" ||
@@ -46,6 +58,14 @@ const upload = multer({
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.put("/profile", protect, upload.single("resume"), updateUserProfile);
+router.post("/refresh-token", refreshToken);
+router.post("/logout", logout);
+
+router.put(
+  "/profile",
+  protect,
+  upload.single("resume"),
+  updateUserProfile
+);
 
 module.exports = router;

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./Authpage.css";
 import campus from "../assets/kiit-university-banner.jpg";
 import logo from "../assets/KIIT-logo.jpg";
+import { useNavigate } from "react-router-dom";
 
 const AuthPage = ({ onLogin }) => {
   const [isSignup, setIsSignup] = useState(false);
@@ -12,7 +13,7 @@ const AuthPage = ({ onLogin }) => {
   const isValidKiitEmail = (email) => {
     return /^[a-zA-Z0-9._%+-]+@kiit\.ac\.in$/.test(email);
   };
-
+  const navigate = useNavigate();
   const handleSubmit = () => {
     setError("");
 
@@ -36,6 +37,7 @@ const AuthPage = ({ onLogin }) => {
       return;
     }
     onLogin();
+    navigate("/dashboard");
   };
 
   return (
@@ -67,7 +69,9 @@ const AuthPage = ({ onLogin }) => {
 
             {error && <p className="error">{error}</p>}
 
-            <button onClick={handleSubmit}>Login</button>
+            <button onClick={handleSubmit} >
+              Login
+            </button>
 
             <span onClick={() => {
               setError("");

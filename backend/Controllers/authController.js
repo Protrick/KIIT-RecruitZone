@@ -2,9 +2,13 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || "fallback_kiit_secret", {
-    expiresIn: "30d",
-  });
+  return jwt.sign(
+    { id },
+    process.env.JWT_SECRET || "fallback_kiit_secret",
+    {
+      expiresIn: "30d",
+    }
+  );
 };
 
 const registerUser = async (req, res) => {
@@ -26,19 +30,15 @@ const registerUser = async (req, res) => {
       branch: branch || "",
     });
 
-    if (user) {
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        cgpa: user.cgpa,
-        branch: user.branch,
-        token: generateToken(user._id),
-      });
-    } else {
-      res.status(400).json({ message: "Invalid user data" });
-    }
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      cgpa: user.cgpa,
+      branch: user.branch,
+      token: generateToken(user._id),
+    });
   } catch (error) {
     console.error("Register Error:", error);
     res.status(500).json({ message: "Server error during registration" });
@@ -75,46 +75,60 @@ const updateUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
-    if (user) {
-      user.name = req.body.name || user.name;
-      user.email = req.body.email || user.email;
-      
-      if (req.body.password) {
-        user.password = req.body.password;
-      }
-
-      if (user.role === "student") {
-        user.cgpa = req.body.cgpa !== undefined ? Number(req.body.cgpa) : user.cgpa;
-        user.branch = req.body.branch || user.branch;
-
-        if (req.file) {
-          user.resume = `/uploads/resumes/${req.file.filename}`;
-        }
-      }
-
-      const updatedUser = await user.save();
-
-      res.json({
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        role: updatedUser.role,
-        cgpa: updatedUser.cgpa,
-        branch: updatedUser.branch,
-        resume: updatedUser.resume,
-        token: generateToken(updatedUser._id),
-      });
-    } else {
-      res.status(404).json({ message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    if (user.role === "student") {
+      user.cgpa =
+        req.body.cgpa !== undefined ? Number(req.body.cgpa) : user.cgpa;
+      user.branch = req.body.branch || user.branch;
+
+      if (req.file) {
+        user.resume = `/uploads/resumes/${req.file.filename}`;
+      }
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      cgpa: updatedUser.cgpa,
+      branch: updatedUser.branch,
+      resume: updatedUser.resume,
+      token: generateToken(updatedUser._id),
+    });
   } catch (error) {
     console.error("Profile Update Error:", error);
     res.status(500).json({ message: "Server error during profile update" });
   }
 };
 
+// Optional endpoints
+const refreshToken = async (req, res) => {
+  res.status(501).json({
+    message: "Refresh token functionality is not implemented in this authentication flow.",
+  });
+};
+
+const logout = async (req, res) => {
+  res.status(200).json({ message: "Logged out successfully" });
+};
+
 module.exports = {
   registerUser,
   loginUser,
   updateUserProfile,
+  refreshToken,
+  logout,
 };
