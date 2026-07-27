@@ -1,9 +1,8 @@
-import express from "express";
-import { getProblems } from "../controllers/problemController.js";
-import { login, signup, refreshToken, logout } from "../controllers/authController.js";
+const express = require("express");
+const { getProblems } = require("../controllers/problemController");
 
 const router = express.Router();
 
 router.get("/", getProblems);
 
-export default router;
+module.exports = router;
