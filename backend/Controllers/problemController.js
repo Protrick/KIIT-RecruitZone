@@ -1,33 +1,21 @@
 const Problem = require("../models/Problem");
 
 // GET problems with filters
-exports.getProblems = async (req, res) => {
+const getProblems = async (req, res) => {
   try {
     const { category, difficulty, topic, company, search } = req.query;
 
-    let filter = {};
+    const filter = {};
 
-    if (category && category !== "") {
-      filter.category = category;
-    }
+    if (category) filter.category = category;
+    if (difficulty) filter.difficulty = difficulty;
+    if (topic) filter.topic = topic;
+    if (company) filter.company = company;
 
-    if (difficulty && difficulty !== "") {
-      filter.difficulty = difficulty;
-    }
-
-    if (topic && topic !== "") {
-      filter.topic = topic;
-    }
-
-    if (company && company !== "") {
-      filter.company = company;
-    }
-
-    if (search && search !== "") {
+    if (search) {
       filter.title = { $regex: search, $options: "i" };
     }
 
-    // ✅ Correct model usage
     const problems = await Problem.find(filter);
 
     res.status(200).json(problems);
@@ -35,4 +23,8 @@ exports.getProblems = async (req, res) => {
     console.error("Error in getProblems:", error);
     res.status(500).json({ message: "Server Error" });
   }
+};
+
+module.exports = {
+  getProblems,
 };

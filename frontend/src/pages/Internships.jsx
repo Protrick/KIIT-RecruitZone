@@ -1,13 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InternshipCard from "../components/InternshipCard";
 import InternshipFilter from "../components/InternshipFilter";
 import internshipsData from "../data/Internships.json";
 import { Link } from "react-router-dom";
 import KIITHeader from "../assets/kiit-header.png";
+import axios from "axios";
 
 
 const Internship = () => {
   const [activeTab, setActiveTab] = useState("recent");
+  const [internshipsList, setInternshipsList] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/jobs/internships")
+      .then((res) => {
+        if (res.data && res.data.length > 0) {
+          const mapped = res.data.map((internship) => ({
+            id: internship._id,
+            logo: "https://via.placeholder.com/150",
+            company: internship.company,
+            role: internship.title,
+            location: internship.location,
+            ctc: internship.duration,
+            stipend: internship.stipend,
+            skills: internship.skillsRequired || [],
+            category: "Web Development",
+            stipendAmount: internship.stipend,
+            postedOn: internship.createdAt,
+            isRecent: true,
+            description: `Duration: ${internship.duration} | Skills: ${(internship.skillsRequired || []).join(', ')}`
+          }));
+          setInternshipsList(mapped);
+        } else {
+          setInternshipsList(internshipsData);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching internships:", err);
+        setInternshipsList(internshipsData);
+      });
+  }, []);
 
   const [filters, setFilters] = useState({
     type: "",
@@ -19,7 +52,7 @@ const Internship = () => {
 
   // Get unique categories
   const categories = [
-    ...new Set(internshipsData.map((i) => i.category)),
+    ...new Set(internshipsList.map((i) => i.category)),
   ];
 
   // Filter logic
@@ -54,12 +87,12 @@ const Internship = () => {
     return result;
   };
 
-  const recentInternships = internshipsData.filter((i) => i.isRecent);
+  const recentInternships = internshipsList.filter((i) => i.isRecent);
 
   const displayedData =
     activeTab === "recent"
       ? applyFilters(recentInternships)
-      : applyFilters(internshipsData);
+      : applyFilters(internshipsList);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f4fbf7]">

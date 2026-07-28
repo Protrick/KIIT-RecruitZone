@@ -23,6 +23,7 @@ function App() {
         <>
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/login" element={<AuthPage onLogin={() => setIsAuthenticated(true)} />} />
             <Route path="/companies" element={<Companies />} />
             <Route path="/events" element={<Events />} />
             <Route path="/admin" element={<Admin />} />
