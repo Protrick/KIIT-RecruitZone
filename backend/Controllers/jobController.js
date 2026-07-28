@@ -1,259 +1,153 @@
-const Job = require("../models/Job");
-const Internship = require("../models/Internship");
+const Job = require('../models/Job');
 
-
-
-const getJobs = async (req, res) => {
+exports.getAllJobs = async (req, res) => {
   try {
-    const { search, location, minSalary } = req.query;
-    let query = {};
+    const { status, branch, batchYear, search, sort, page = 1, limit = 10 } = req.query;
 
-    if (search && search.trim() !== "") {
-      query.$or = [
-        { title: { $regex: search, $options: "i" } },
-        { company: { $regex: search, $options: "i" } },
-        { skillsRequired: { $in: [new RegExp(search, "i")] } },
-      ];
+    const filter = {};
+
+    if (status) filter.status = status;
+    if (branch) filter['eligibility.branchesAllowed'] = branch;
+    if (batchYear) filter['eligibility.batchYears'] = Number(batchYear);
+
+    if (search) {
+      // uses the text index defined on the Job model (company, role)
+      filter.$text = { $search: search };
     }
 
-    if (location && location.trim() !== "") {
-      query.location = { $regex: location, $options: "i" };
-    }
+    const sortOptions = {
+      newest: { postedDate: -1 },
+      deadline: { registrationDeadline: 1 },
+      ctc: { ctcValue: -1 },
+    };
+    const sortBy = sortOptions[sort] || sortOptions.newest;
 
-    if (minSalary) {
-      const salaryVal = Number(minSalary);
-      if (!isNaN(salaryVal)) {
-        query.salary = { $gte: salaryVal };
-      }
-    }
+    const pageNum = Math.max(1, Number(page));
+    const limitNum = Math.min(50, Math.max(1, Number(limit)));
+    const skip = (pageNum - 1) * limitNum;
 
-    const jobs = await Job.find(query).sort({ deadline: 1 });
-    res.status(200).json(jobs);
-  } catch (error) {
-    console.error("Get Jobs Error:", error);
-    res.status(500).json({ message: "Server error fetching jobs" });
+    const [jobs, total] = await Promise.all([
+      Job.find(filter).sort(sortBy).skip(skip).limit(limitNum),
+      Job.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      count: jobs.length,
+      total,
+      page: pageNum,
+      totalPages: Math.ceil(total / limitNum),
+      data: jobs,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to fetch jobs', error: err.message });
   }
 };
 
-const getJobById = async (req, res) => {
+/**
+ * @desc    Get a single job by ID
+ * @route   GET /api/jobs/:id
+ * @access  Public / Student
+ */
+exports.getJobById = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
+
     if (!job) {
-      return res.status(404).json({ message: "Job posting not found" });
+      return res.status(404).json({ success: false, message: 'Job not found' });
     }
-    res.status(200).json(job);
-  } catch (error) {
-    console.error("Get Job By ID Error:", error);
-    res.status(500).json({ message: "Server error fetching job details" });
+
+    res.status(200).json({ success: true, data: job });
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'Invalid job ID' });
+    }
+    res.status(500).json({ success: false, message: 'Failed to fetch job', error: err.message });
   }
 };
 
-const createJob = async (req, res) => {
+/**
+ * @desc    Create a new job drive
+ * @route   POST /api/jobs
+ * @access  Admin
+ */
+exports.createJob = async (req, res) => {
   try {
-    const { title, company, location, salary, experienceRequired, skillsRequired, applyUrl, deadline } = req.body;
-
-    const skillsArray = Array.isArray(skillsRequired)
-      ? skillsRequired
-      : skillsRequired
-      ? skillsRequired.split(",").map((s) => s.trim())
-      : [];
-
-    const job = new Job({
-      title,
-      company,
-      location: location || "Remote",
-      salary: Number(salary),
-      experienceRequired,
-      skillsRequired: skillsArray,
-      applyUrl,
-      deadline: new Date(deadline),
+    const job = await Job.create({
+      ...req.body,
+      createdBy: req.user._id,
     });
 
-    const createdJob = await job.save();
-    res.status(201).json(createdJob);
-  } catch (error) {
-    console.error("Create Job Error:", error);
-    res.status(500).json({ message: "Server error creating job posting" });
-  }
-};
-
-const updateJob = async (req, res) => {
-  try {
-    const job = await Job.findById(req.params.id);
-    if (!job) {
-      return res.status(404).json({ message: "Job posting not found" });
+    res.status(201).json({ success: true, data: job });
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      const messages = Object.values(err.errors).map((e) => e.message);
+      return res.status(400).json({ success: false, message: messages.join(', ') });
     }
-
-    const { title, company, location, salary, experienceRequired, skillsRequired, applyUrl, deadline } = req.body;
-
-    job.title = title || job.title;
-    job.company = company || job.company;
-    job.location = location !== undefined ? location : job.location;
-    job.salary = salary !== undefined ? Number(salary) : job.salary;
-    job.experienceRequired = experienceRequired || job.experienceRequired;
-    job.applyUrl = applyUrl || job.applyUrl;
-    job.deadline = deadline ? new Date(deadline) : job.deadline;
-
-    if (skillsRequired) {
-      job.skillsRequired = Array.isArray(skillsRequired)
-        ? skillsRequired
-        : skillsRequired.split(",").map((s) => s.trim());
-    }
-
-    const updatedJob = await job.save();
-    res.status(200).json(updatedJob);
-  } catch (error) {
-    console.error("Update Job Error:", error);
-    res.status(500).json({ message: "Server error updating job posting" });
-  }
-};
-
-const deleteJob = async (req, res) => {
-  try {
-    const job = await Job.findById(req.params.id);
-    if (!job) {
-      return res.status(404).json({ message: "Job posting not found" });
-    }
-
-    await Job.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Job posting deleted successfully" });
-  } catch (error) {
-    console.error("Delete Job Error:", error);
-    res.status(500).json({ message: "Server error deleting job posting" });
+    res.status(500).json({ success: false, message: 'Failed to create job', error: err.message });
   }
 };
 
 
-
-const getInternships = async (req, res) => {
+exports.updateJob = async (req, res) => {
   try {
-    const { search, location, minStipend } = req.query;
-    let query = {};
-
-    if (search && search.trim() !== "") {
-      query.$or = [
-        { title: { $regex: search, $options: "i" } },
-        { company: { $regex: search, $options: "i" } },
-        { skillsRequired: { $in: [new RegExp(search, "i")] } },
-      ];
-    }
-
-    if (location && location.trim() !== "") {
-      query.location = { $regex: location, $options: "i" };
-    }
-
-    if (minStipend) {
-      const stipendVal = Number(minStipend);
-      if (!isNaN(stipendVal)) {
-        query.stipend = { $gte: stipendVal };
-      }
-    }
-
-    const internships = await Internship.find(query).sort({ deadline: 1 });
-    res.status(200).json(internships);
-  } catch (error) {
-    console.error("Get Internships Error:", error);
-    res.status(500).json({ message: "Server error fetching internships" });
-  }
-};
-
-const getInternshipById = async (req, res) => {
-  try {
-    const internship = await Internship.findById(req.params.id);
-    if (!internship) {
-      return res.status(404).json({ message: "Internship posting not found" });
-    }
-    res.status(200).json(internship);
-  } catch (error) {
-    console.error("Get Internship By ID Error:", error);
-    res.status(500).json({ message: "Server error fetching internship details" });
-  }
-};
-
-const createInternship = async (req, res) => {
-  try {
-    const { title, company, location, stipend, duration, skillsRequired, applyUrl, deadline } = req.body;
-
-    const skillsArray = Array.isArray(skillsRequired)
-      ? skillsRequired
-      : skillsRequired
-      ? skillsRequired.split(",").map((s) => s.trim())
-      : [];
-
-    const internship = new Internship({
-      title,
-      company,
-      location: location || "Remote",
-      stipend: Number(stipend),
-      duration,
-      skillsRequired: skillsArray,
-      applyUrl,
-      deadline: new Date(deadline),
+    const job = await Job.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
     });
 
-    const createdInternship = await internship.save();
-    res.status(201).json(createdInternship);
-  } catch (error) {
-    console.error("Create Internship Error:", error);
-    res.status(500).json({ message: "Server error creating internship" });
+    if (!job) {
+      return res.status(404).json({ success: false, message: 'Job not found' });
+    }
+
+    res.status(200).json({ success: true, data: job });
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      const messages = Object.values(err.errors).map((e) => e.message);
+      return res.status(400).json({ success: false, message: messages.join(', ') });
+    }
+    if (err.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'Invalid job ID' });
+    }
+    res.status(500).json({ success: false, message: 'Failed to update job', error: err.message });
   }
 };
 
-const updateInternship = async (req, res) => {
+
+exports.deleteJob = async (req, res) => {
   try {
-    const internship = await Internship.findById(req.params.id);
-    if (!internship) {
-      return res.status(404).json({ message: "Internship posting not found" });
+    const job = await Job.findByIdAndDelete(req.params.id);
+
+    if (!job) {
+      return res.status(404).json({ success: false, message: 'Job not found' });
     }
 
-    const { title, company, location, stipend, duration, skillsRequired, applyUrl, deadline } = req.body;
-
-    internship.title = title || internship.title;
-    internship.company = company || internship.company;
-    internship.location = location !== undefined ? location : internship.location;
-    internship.stipend = stipend !== undefined ? Number(stipend) : internship.stipend;
-    internship.duration = duration || internship.duration;
-    internship.applyUrl = applyUrl || internship.applyUrl;
-    internship.deadline = deadline ? new Date(deadline) : internship.deadline;
-
-    if (skillsRequired) {
-      internship.skillsRequired = Array.isArray(skillsRequired)
-        ? skillsRequired
-        : skillsRequired.split(",").map((s) => s.trim());
+    res.status(200).json({ success: true, message: 'Job deleted successfully' });
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'Invalid job ID' });
     }
-
-    const updatedInternship = await internship.save();
-    res.status(200).json(updatedInternship);
-  } catch (error) {
-    console.error("Update Internship Error:", error);
-    res.status(500).json({ message: "Server error updating internship" });
+    res.status(500).json({ success: false, message: 'Failed to delete job', error: err.message });
   }
 };
 
-const deleteInternship = async (req, res) => {
+
+exports.getJobStats = async (req, res) => {
   try {
-    const internship = await Internship.findById(req.params.id);
-    if (!internship) {
-      return res.status(404).json({ message: "Internship posting not found" });
-    }
+    const totalJobs = await Job.countDocuments();
+    const byStatus = await Job.aggregate([
+      { $group: { _id: '$status', count: { $sum: 1 } } },
+    ]);
+    const mostInterested = await Job.find()
+      .sort({ interestedCount: -1 })
+      .limit(5)
+      .select('company role interestedCount');
 
-    await Internship.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Internship posting deleted successfully" });
-  } catch (error) {
-    console.error("Delete Internship Error:", error);
-    res.status(500).json({ message: "Server error deleting internship" });
+    res.status(200).json({
+      success: true,
+      data: { totalJobs, byStatus, mostInterested },
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to fetch stats', error: err.message });
   }
-};
-
-module.exports = {
-  getJobs,
-  getJobById,
-  createJob,
-  updateJob,
-  deleteJob,
-  getInternships,
-  getInternshipById,
-  createInternship,
-  updateInternship,
-  deleteInternship,
 };
