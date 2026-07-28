@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Jobs from "./pages/Jobs";
 import AuthPage from "./components/Authpage";
 import Internship from "./pages/Internships";
+import Societies from "./pages/Socities";
 import PrepareInterview from "./pages/Interview";
 import DSAProblems from "./pages/Dsa";
 
@@ -30,6 +31,7 @@ function App() {
             <Route path="/dashboard/*" element={<Dashboard />} />
             <Route path="/dashboard/jobs" element={<Jobs />} />
             <Route path="/dashboard/internships" element={<Internship />} />
+            <Route path="/dashboard/societies" element={<Societies />} />
             <Route path="/dashboard/prepare-interview" element={<PrepareInterview />} />
             {/*<Route path="/dashboard/prepare-interview/:category" element={<DSAProblems />} /> */}
             <Route path="/problems" element={<DSAProblems />} />

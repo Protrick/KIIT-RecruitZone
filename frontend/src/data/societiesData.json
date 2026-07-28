@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "societyName": "Computer Science Society",
+    "logo": "/logos/cs.png",
+    "category": "Tech",
+    "title": "Hackathon 2024: Build for Future",
+    "description": "Join us for a 48-hour sprint of coding, networking, and innovation.",
+    "date": "Oct 25, 2024",
+    "time": "10:00 - 16:00",
+    "venue": "Engineering Hall",
+    "organizer": "Dr. Jenkins",
+    "image": "/images/hackathon.jpg"
+  },
+  {
+    "id": 2,
+    "societyName": "Music & Arts Guild",
+    "logo": "/logos/music.png",
+    "category": "Arts",
+    "title": "Midnight Jazz & Blues Session",
+    "description": "Experience soulful evening with guest performers.",
+    "date": "Nov 10, 2024",
+    "time": "18:00 - 22:00",
+    "venue": "Main Auditorium",
+    "organizer": "Mr. Clark",
+    "image": "/images/jazz.jpg"
+  }
+]

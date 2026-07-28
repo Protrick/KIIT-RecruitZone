@@ -1,4 +1,30 @@
-.env
-**/.env
+# Node.js dependencies
 node_modules/
-uploads/
+
+# Environment files
+.env
+.env.local
+
+# IDE-specific files
+.idea/
+.vscode/
+
+# Temporary and cache files
+*.swp
+*.swo
+*.tmp
+
+# Build files and generated directories
+dist/
+build/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Local development files
+*.log
+*.local
+
+# Testing files
+coverage/

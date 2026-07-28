@@ -10,69 +10,88 @@ const PrepareInterview = () => {
     
 
     <div className="min-h-screen flex flex-col bg-[#f4fbf7]">
-        {/* Navbar */}
-                          <nav className="bg-white shadow-md px-6 py-4 flex items-center justify-between mb-4">
-                            {/* Left side - KIIT Header Image */}
-                            <div className="flex items-center">
-                              <img 
-                                src={KIITHeader} 
-                                alt="KIIT - Kalinga Institute of Industrial Technology" 
-                                className="h-12 object-contain"
-                              />
-                            </div>
-                    
-                            {/* Right side - Nav Links + Profile Avatar */}
-                            <div className="flex items-center gap-6">
-                              {/* Nav Links */}
-                              <div className="flex items-center gap-1">
-                                <Link 
-                                  to="/dashboard" 
-                                  className="flex items-center gap-2 px-4 py-2 rounded-full font-medium text-gray-700 hover:bg-[#1FAA59] hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#1FAA59]/25"
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                  </svg>
-                                  Home
-                                </Link>
-                                <Link 
-                                  to="/dashboard/internships" 
-                                  className="flex items-center gap-2 px-4 py-2 rounded-full font-medium text-gray-700 hover:bg-[#1FAA59] hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#1FAA59]/25"
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                  </svg>
-                                  Internships
-                                </Link>
-                                <Link 
-                                  to="/dashboard/jobs" 
-                                  className="flex items-center gap-2 px-4 py-2 rounded-full font-medium text-gray-700 hover:bg-[#1FAA59] hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#1FAA59]/25"
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                  </svg>
-                                  Jobs
-                                </Link>
-                              </div>
-                    
-                              {/* Divider */}
-                              <div className="w-px h-8 bg-gray-200" />
-                    
-                              {/* Profile Avatar */}
-                              <button className="relative group flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gray-100 transition-all duration-300">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1FAA59] to-[#006838] flex items-center justify-center text-white font-semibold text-lg shadow-md group-hover:shadow-lg transition-shadow">
-                                  P
-                                </div>
-                                <div className="hidden sm:flex flex-col items-start">
-                                  <span className="text-sm font-medium text-gray-800">Pratik</span>
-                                  <span className="text-xs text-gray-500">Student</span>
-                                </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-500 group-hover:text-gray-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                                </svg>
-                              </button>
-                            </div>
-                          </nav>
+         {/* Navbar */}
+              <nav className="bg-white shadow-md px-6 py-4 flex items-center justify-between">
+                {/* Left side - KIIT Header Image */}
+                <div className="flex items-center">
+                  <img 
+                    src={KIITHeader} 
+                    alt="KIIT - Kalinga Institute of Industrial Technology" 
+                    className="h-12 object-contain"
+                  />
+                </div>
         
+                {/* Right side - Nav Links + Profile Avatar */}
+                <div className="flex items-center gap-6">
+                  {/* Nav Links */}
+                  <div className="flex items-center gap-1">
+                    <Link 
+                      to="/dashboard" 
+                      className="flex items-center gap-2 px-4 py-2 rounded-full font-medium text-gray-700 hover:bg-[#1FAA59] hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#1FAA59]/25"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      </svg>
+                      Home
+                    </Link>
+                    <Link 
+                      to="/dashboard/internships" 
+                      className="flex items-center gap-2 px-4 py-2 rounded-full font-medium text-gray-700 hover:bg-[#1FAA59] hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#1FAA59]/25"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      Internships
+                    </Link>
+                    <Link 
+                      to="/dashboard/jobs" 
+                      className="flex items-center gap-2 px-4 py-2 rounded-full font-medium text-gray-700 hover:bg-[#1FAA59] hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#1FAA59]/25"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      Jobs
+                    </Link>
+                    <Link 
+                      to="/dashboard/societies" 
+                      className="flex items-center gap-2 px-4 py-2 rounded-full font-medium text-gray-700 hover:bg-[#1FAA59] hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#1FAA59]/25"
+                    >
+                      <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-4 h-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M17 20h5v-1a4 4 0 00-5-3.87M9 20H4v-1a4 4 0 015-3.87m8-2.13a4 4 0 10-8 0m8 0a4 4 0 01-8 0m8 0v1m-8-1v1m-4-7a3 3 0 116 0 3 3 0 01-6 0zm10 0a3 3 0 116 0 3 3 0 01-6 0z"
+          />
+        </svg>
+                      Society
+                    </Link>
+                  </div>
+        
+                  {/* Divider */}
+                  <div className="w-px h-8 bg-gray-200" />
+        
+                  {/* Profile Avatar */}
+                  <button className="relative group flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gray-100 transition-all duration-300">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1FAA59] to-[#006838] flex items-center justify-center text-white font-semibold text-lg shadow-md group-hover:shadow-lg transition-shadow">
+                      P
+                    </div>
+                    <div className="hidden sm:flex flex-col items-start">
+                      <span className="text-sm font-medium text-gray-800">Pratik</span>
+                      <span className="text-xs text-gray-500">Student</span>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-500 group-hover:text-gray-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+              </nav>
       
       {/* Hero Section */}
       <div className="max-w-5xl mx-auto text-center mb-16">
