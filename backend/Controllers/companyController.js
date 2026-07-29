@@ -74,12 +74,15 @@ const createCompany = async (req, res) => {
       logo,
       roles,
       ctc,
-      minCGPA,
-      allowedBranches,
       driveDate,
       deadline,
       status,
     } = req.body;
+
+    // eligibilityCriteria arrives nested from the frontend:
+    // { eligibilityCriteria: { minCGPA, allowedBranches } }
+    const minCGPA = req.body.eligibilityCriteria?.minCGPA;
+    const allowedBranches = req.body.eligibilityCriteria?.allowedBranches;
 
     const rolesArray = Array.isArray(roles)
       ? roles
@@ -133,12 +136,15 @@ const updateCompany = async (req, res) => {
       logo,
       roles,
       ctc,
-      minCGPA,
-      allowedBranches,
       driveDate,
       deadline,
       status,
     } = req.body;
+
+    // eligibilityCriteria arrives nested from the frontend:
+    // { eligibilityCriteria: { minCGPA, allowedBranches } }
+    const minCGPA = req.body.eligibilityCriteria?.minCGPA;
+    const allowedBranches = req.body.eligibilityCriteria?.allowedBranches;
 
     company.companyName = companyName || company.companyName;
     company.logo = logo !== undefined ? logo : company.logo;
