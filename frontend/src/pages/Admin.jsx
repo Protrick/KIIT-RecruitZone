@@ -74,8 +74,19 @@ export default function AdminPanel() {
 
   useEffect(() => {
     const autoLoginAndFetch = async () => {
-      // 1. Authenticate in the background
+      // 1. Authenticate in the background (Register if not exists, then Login)
       try {
+        try {
+          await axios.post("http://localhost:5000/api/auth/register", {
+            name: "T&P Officer",
+            email: "admin@kiit.ac.in",
+            password: "adminpassword",
+            role: "admin"
+          });
+        } catch (regErr) {
+          // Ignore registration errors (e.g. if user already exists)
+        }
+
         const loginRes = await axios.post("http://localhost:5000/api/auth/login", {
           email: "admin@kiit.ac.in",
           password: "adminpassword"
