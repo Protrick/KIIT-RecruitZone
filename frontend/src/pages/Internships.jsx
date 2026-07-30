@@ -15,21 +15,22 @@ const Internship = () => {
     axios
       .get("http://localhost:5000/api/jobs/internships")
       .then((res) => {
-        if (res.data && res.data.length > 0) {
-          const mapped = res.data.map((internship) => ({
+        const internships = res.data?.data || res.data;
+        if (internships && internships.length > 0) {
+          const mapped = internships.map((internship) => ({
             id: internship._id,
-            logo: "https://via.placeholder.com/150",
+            logo: internship.logo || "https://via.placeholder.com/150",
             company: internship.company,
-            role: internship.title,
+            role: internship.role || internship.title,
             location: internship.location,
             ctc: internship.duration,
             stipend: internship.stipend,
-            skills: internship.skillsRequired || [],
-            category: "Web Development",
-            stipendAmount: internship.stipend,
-            postedOn: internship.createdAt,
-            isRecent: true,
-            description: `Duration: ${internship.duration} | Skills: ${(internship.skillsRequired || []).join(', ')}`
+            skills: internship.skills || internship.skillsRequired || [],
+            category: internship.category || "Web Development",
+            stipendAmount: internship.stipendAmount || internship.stipend,
+            postedOn: internship.postedOn || internship.createdAt,
+            isRecent: typeof internship.isRecent === 'boolean' ? internship.isRecent : true,
+            description: internship.description || `Duration: ${internship.duration} | Skills: ${(internship.skills || internship.skillsRequired || []).join(', ')}`
           }));
           setInternshipsList(mapped);
         } else {

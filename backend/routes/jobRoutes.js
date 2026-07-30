@@ -8,18 +8,18 @@ const {
   updateJob,
   deleteJob,
   getJobStats,
-} = require('../controllers/jobController');
+} = require('../Controllers/jobController');
 
-const { protect, authorize } = require('../middleware/auth');
+const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 // Public / student routes
 router.get('/', getAllJobs);
-router.get('/stats/dashboard', protect, authorize('admin'), getJobStats);
+router.get('/stats/dashboard', protect, adminOnly, getJobStats);
 router.get('/:id', getJobById);
 
 // Admin-only routes
-router.post('/', protect, authorize('admin'), createJob);
-router.put('/:id', protect, authorize('admin'), updateJob);
-router.delete('/:id', protect, authorize('admin'), deleteJob);
+router.post('/', protect, adminOnly, createJob);
+router.put('/:id', protect, adminOnly, updateJob);
+router.delete('/:id', protect, adminOnly, deleteJob);
 
 module.exports = router;
