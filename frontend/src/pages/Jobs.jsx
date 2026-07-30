@@ -14,18 +14,19 @@ const Jobs = () => {
     axios
       .get("http://localhost:5000/api/jobs")
       .then((res) => {
-        if (res.data && res.data.length > 0) {
-          const mapped = res.data.map((job) => ({
+        const jobs = res.data?.data || res.data;
+        if (jobs && jobs.length > 0) {
+          const mapped = jobs.map((job) => ({
             id: job._id,
-            logo: "https://via.placeholder.com/150",
+            logo: job.logo || "https://via.placeholder.com/150",
             company: job.company,
-            role: job.title,
+            role: job.role || job.title,
             location: job.location,
-            type: "Full-Time",
-            ctc: `${job.salary} LPA`,
-            skills: job.skillsRequired || [],
-            postedDate: new Date(job.createdAt).toLocaleDateString(),
-            daysLeft: Math.max(0, Math.ceil((new Date(job.deadline) - new Date()) / (1000 * 60 * 60 * 24)))
+            type: job.type || "Full-Time",
+            ctc: job.ctc,
+            skills: job.skills || job.skillsRequired || [],
+            postedDate: new Date(job.postedDate || job.createdAt).toLocaleDateString(),
+            daysLeft: typeof job.daysLeft === 'number' ? job.daysLeft : Math.max(0, Math.ceil((new Date(job.registrationDeadline || job.deadline) - new Date()) / (1000 * 60 * 60 * 24)))
           }));
           setJobsList(mapped);
         } else {

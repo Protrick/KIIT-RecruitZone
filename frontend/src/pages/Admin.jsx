@@ -1,8 +1,8 @@
+import { Link } from "react-router-dom";
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Save, X, AlertCircle, MapPin, FileText, Upload, Briefcase, GraduationCap, Building2, Clock, Lock, ArrowRight } from 'lucide-react';
+import { Plus, Save, X, AlertCircle, MapPin, FileText, Upload, Briefcase, GraduationCap, Building2, Clock, Lock } from 'lucide-react';
+import { ArrowRight } from "lucide-react";
 import axios from 'axios';
-
 /* ─── Animated counter ─── */
 function Counter({ value }) {
   const [n, setN] = useState(0);
@@ -106,40 +106,43 @@ export default function AdminPanel() {
           axios.get("http://localhost:5000/api/jobs/internships")
         ]);
 
-        const mappedJobs = jobsRes.data.map(j => ({
+        const jobs = jobsRes.data?.data || jobsRes.data || [];
+        const internships = internshipsRes.data?.data || internshipsRes.data || [];
+
+        const mappedJobs = jobs.map(j => ({
           id: j._id,
           listingType: "Job",
           companyName: j.company,
-          jobTitle: j.title,
+          jobTitle: j.role || j.title,
           locationType: j.location,
-          ctc: `₹${j.salary.toLocaleString()}/annum`,
+          ctc: j.ctc || (j.salary ? `₹${j.salary.toLocaleString()}/annum` : "N/A"),
           stipend: "N/A",
           stipendPeriod: "",
-          skills: j.skillsRequired || [],
+          skills: j.skills || j.skillsRequired || [],
           description: j.description || "No description provided.",
           category: "Developer",
-          type: "Full Time",
+          type: j.type || "Full Time",
           verified: true,
-          postedDate: new Date(j.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-          daysLeft: Math.max(0, Math.ceil((new Date(j.deadline) - new Date()) / (1000 * 60 * 60 * 24)))
+          postedDate: new Date(j.postedDate || j.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          daysLeft: typeof j.daysLeft === 'number' ? j.daysLeft : Math.max(0, Math.ceil((new Date(j.registrationDeadline || j.deadline) - new Date()) / (1000 * 60 * 60 * 24)))
         }));
 
-        const mappedInternships = internshipsRes.data.map(i => ({
+        const mappedInternships = internships.map(i => ({
           id: i._id,
           listingType: "Internship",
           companyName: i.company,
-          jobTitle: i.title,
+          jobTitle: i.role || i.title,
           locationType: i.location,
           ctc: "N/A",
-          stipend: `₹${i.stipend.toLocaleString()}`,
+          stipend: i.stipend || (i.stipendAmount ? `₹${i.stipendAmount.toLocaleString()}` : "N/A"),
           stipendPeriod: "/ month",
-          skills: i.skillsRequired || [],
+          skills: i.skills || i.skillsRequired || [],
           description: i.description || "No description provided.",
-          category: "Developer",
+          category: i.category || "Developer",
           type: "Internship",
           verified: true,
-          postedDate: new Date(i.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-          daysLeft: Math.max(0, Math.ceil((new Date(i.deadline) - new Date()) / (1000 * 60 * 60 * 24)))
+          postedDate: new Date(i.postedOn || i.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          daysLeft: typeof i.daysLeft === 'number' ? i.daysLeft : Math.max(0, Math.ceil((new Date(i.registrationDeadline || i.deadline) - new Date()) / (1000 * 60 * 60 * 24)))
         }));
 
         setCards([...mappedJobs, ...mappedInternships]);
@@ -194,31 +197,37 @@ export default function AdminPanel() {
 
       if (isJob) {
         const payload = {
-          title: form.jobTitle,
+          role: form.jobTitle,
           company: form.companyName,
           location: form.locationType,
-          salary: Number(form.ctcAmount),
-          experienceRequired: "0-2 years",
-          skillsRequired: skillsArray,
-          applyUrl: "https://careers.kiit.ac.in",
-          deadline: new Date(Date.now() + Number(form.daysLeft) * 24 * 60 * 60 * 1000)
+          ctc: `${form.ctcAmount} LPA`,
+          ctcValue: Number(form.ctcAmount),
+          experience: "0-2 years",
+          skills: skillsArray,
+          registrationLink: "https://careers.kiit.ac.in",
+          registrationDeadline: new Date(Date.now() + Number(form.daysLeft) * 24 * 60 * 60 * 1000),
+          eligibility: {
+            branchesAllowed: ["CSE", "IT", "ETC"],
+            batchYears: [2026]
+          }
         };
         const res = await axios.post("http://localhost:5000/api/jobs", payload, { headers });
+        const jobData = res.data.data;
         const newCard = {
-          id: res.data._id,
+          id: jobData._id,
           listingType: "Job",
-          companyName: res.data.company,
-          jobTitle: res.data.title,
-          locationType: res.data.location,
-          ctc: `₹${res.data.salary.toLocaleString()}/annum`,
+          companyName: jobData.company,
+          jobTitle: jobData.role,
+          locationType: jobData.location,
+          ctc: jobData.ctc,
           stipend: "N/A",
           stipendPeriod: "",
-          skills: res.data.skillsRequired || [],
+          skills: jobData.skills || [],
           description: form.description,
           category: form.category,
           type: form.type,
           verified: form.verified,
-          postedDate: new Date(res.data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          postedDate: new Date(jobData.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
           daysLeft: parseInt(form.daysLeft),
           pdfFile: form.pdfFile,
           pdfFileName: form.pdfFileName
@@ -226,31 +235,38 @@ export default function AdminPanel() {
         setCards(p => [newCard, ...p]);
       } else {
         const payload = {
-          title: form.jobTitle,
+          role: form.jobTitle,
           company: form.companyName,
           location: form.locationType,
-          stipend: Number(form.stipendAmount),
+          stipend: `₹${Number(form.stipendAmount).toLocaleString()}`,
+          stipendAmount: Number(form.stipendAmount),
           duration: "3-6 Months",
-          skillsRequired: skillsArray,
-          applyUrl: "https://careers.kiit.ac.in",
-          deadline: new Date(Date.now() + Number(form.daysLeft) * 24 * 60 * 60 * 1000)
+          category: form.category || "Software Development",
+          skills: skillsArray,
+          registrationLink: "https://careers.kiit.ac.in",
+          registrationDeadline: new Date(Date.now() + Number(form.daysLeft) * 24 * 60 * 60 * 1000),
+          eligibility: {
+            branchesAllowed: ["CSE", "IT", "ETC"],
+            batchYears: [2026]
+          }
         };
         const res = await axios.post("http://localhost:5000/api/jobs/internships", payload, { headers });
+        const internshipData = res.data.data;
         const newCard = {
-          id: res.data._id,
+          id: internshipData._id,
           listingType: "Internship",
-          companyName: res.data.company,
-          jobTitle: res.data.title,
-          locationType: res.data.location,
+          companyName: internshipData.company,
+          jobTitle: internshipData.role,
+          locationType: internshipData.location,
           ctc: "N/A",
-          stipend: `₹${res.data.stipend.toLocaleString()}`,
+          stipend: internshipData.stipend,
           stipendPeriod: "/ month",
-          skills: res.data.skillsRequired || [],
+          skills: internshipData.skills || [],
           description: form.description,
           category: form.category,
           type: form.type,
           verified: form.verified,
-          postedDate: new Date(res.data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          postedDate: new Date(internshipData.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
           daysLeft: parseInt(form.daysLeft),
           pdfFile: form.pdfFile,
           pdfFileName: form.pdfFileName
