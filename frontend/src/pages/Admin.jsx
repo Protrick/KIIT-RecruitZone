@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Save, X, AlertCircle, MapPin, FileText, Upload, Briefcase, GraduationCap, Building2, Clock, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Plus, Save, X, AlertCircle, MapPin, FileText, Upload, Briefcase, GraduationCap, Building2, Clock, Lock, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 
 /* ─── Animated counter ─── */
@@ -422,7 +423,7 @@ export default function AdminPanel() {
 
       /* Stats pill */
       .hdr-pill{
-        display:flex;align-items:center;gap:18px;
+        display:flex;align-items:center;gap:14px;
       }
       .stat-pill{
         background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
@@ -433,6 +434,21 @@ export default function AdminPanel() {
       .stat-pill:hover{background:rgba(255,255,255,.24);transform:translateY(-1px);}
       .stat-dot{width:7px;height:7px;border-radius:50%;background:#fff;animation:heartbeat 2.8s ease-in-out infinite;}
       .stat-num{font-family:'Lora',serif;font-size:16px;font-weight:600;}
+
+      /* View Companies nav button, same pill language as stat-pill but actionable */
+      .btn-view-companies{
+        display:flex;align-items:center;gap:8px;
+        background:rgba(255,255,255,.95);color:#0d6e3a;
+        border:1px solid rgba(255,255,255,.6);
+        border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;
+        text-decoration:none;white-space:nowrap;
+        transition:background .3s ease,transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s ease,gap .3s ease;
+        box-shadow:0 2px 10px rgba(0,0,0,.08);
+      }
+      .btn-view-companies:hover{background:#fff;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.16);gap:11px;}
+      .btn-view-companies:active{transform:translateY(0) scale(.98);}
+      .btn-view-companies svg{transition:transform .3s cubic-bezier(.16,1,.3,1);}
+      .btn-view-companies:hover svg{transform:translateX(3px);}
 
       /* ══════════ TOAST ══════════ */
       .toast{
@@ -740,6 +756,12 @@ export default function AdminPanel() {
               <span style={{ fontSize: 12, color: 'rgba(255,255,255,.8)' }}>Active Listings</span>
               <span className="stat-num"><Counter value={cards.length} /></span>
             </div>
+
+            {/* View Companies — navigates to the Companies management page */}
+            <Link to="/companies" className="btn-view-companies">
+              View Companies
+              <ArrowRight size={15} />
+            </Link>
           </div>
         </div>
       </header>

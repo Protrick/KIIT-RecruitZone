@@ -8,35 +8,41 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
     email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
       unique: true,
-      trim: true,
       lowercase: true,
+      trim: true,
       match: [
-        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-        "Please enter a valid email address",
+        /^[A-Za-z0-9._%+-]+@kiit\.ac\.in$/,
+        "Please give a valid KIIT email address",
       ],
     },
+
     password: {
       type: String,
-      required: true,
-      minlength: 6,
+      required: [true, "Password is required"],
+      minlength: [6, "Password must be at least 6 characters"],
     },
+
     role: {
       type: String,
       enum: ["student", "admin"],
       default: "student",
     },
+
     cgpa: {
       type: Number,
       default: 0.0,
     },
+
     branch: {
       type: String,
       default: "",
     },
+
     resume: {
       type: String,
       default: "",
@@ -48,9 +54,8 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function () {
-  if (!this.isModified("password")) {
-    return;
-  }
+  if (!this.isModified("password")) return;
+
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "./Authpage.css";
 import campus from "../assets/kiit-university-banner.jpg";
 import logo from "../assets/KIIT-logo.jpg";
+import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
 
 const AuthPage = ({ onLogin }) => {
   const [isSignup, setIsSignup] = useState(false);
@@ -12,31 +14,63 @@ const AuthPage = ({ onLogin }) => {
   const isValidKiitEmail = (email) => {
     return /^[a-zA-Z0-9._%+-]+@kiit\.ac\.in$/.test(email);
   };
+  const navigate = useNavigate();
+ const handleSubmit = async () => {
+  setError("");
 
-  const handleSubmit = () => {
-    setError("");
+  if (isSignup && fullName.trim() === "") {
+    setError("Full name is required");
+    return;
+  }
 
-    if (isSignup && fullName.trim() === "") {
-      setError("Full name is required");
-      return;
+  if (!email || !password) {
+    setError("All fields are required");
+    return;
+  }
+
+  if (!isValidKiitEmail(email)) {
+    setError("Only @kiit.ac.in email IDs are allowed");
+    return;
+  }
+
+  if (password.length < 6) {
+    setError("Password must be at least 6 characters");
+    return;
+  }
+
+  try {
+    let res;
+
+    if (isSignup) {
+      // Register
+      res = await api.post(
+        "auth/register",
+        {
+          name: fullName,
+          email,
+          password,
+        }
+      );
+    } else {
+      // Login
+      res = await api.post(
+        "/auth/login",
+        {
+          email,
+          password,
+        }
+      );
     }
 
-    if (!email || !password) {
-      setError("All fields are required");
-      return;
-    }
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user", JSON.stringify(res.data));
 
-    if (!isValidKiitEmail(email)) {
-      setError("Only @kiit.ac.in email IDs are allowed");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
     onLogin();
-  };
+    navigate("/dashboard");
+  } catch (err) {
+    setError(err.response?.data?.message || "Something went wrong");
+  }
+};
 
   return (
     <div
@@ -67,7 +101,9 @@ const AuthPage = ({ onLogin }) => {
 
             {error && <p className="error">{error}</p>}
 
-            <button onClick={handleSubmit}>Login</button>
+            <button onClick={handleSubmit} >
+              Login
+            </button>
 
             <span onClick={() => {
               setError("");

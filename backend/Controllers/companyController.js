@@ -38,23 +38,32 @@ const getCompanies = async (req, res) => {
     }
 
     const companies = await Company.find(query).sort({ deadline: 1 });
+
     res.status(200).json(companies);
   } catch (error) {
     console.error("Get Companies Error:", error);
-    res.status(500).json({ message: "Server error retrieving company drives" });
+    res.status(500).json({
+      message: "Server error retrieving company drives",
+    });
   }
 };
 
 const getCompanyById = async (req, res) => {
   try {
     const company = await Company.findById(req.params.id);
+
     if (!company) {
-      return res.status(404).json({ message: "Company drive not found" });
+      return res.status(404).json({
+        message: "Company drive not found",
+      });
     }
+
     res.status(200).json(company);
   } catch (error) {
     console.error("Get Company By ID Error:", error);
-    res.status(500).json({ message: "Server error retrieving drive details" });
+    res.status(500).json({
+      message: "Server error retrieving drive details",
+    });
   }
 };
 
@@ -65,18 +74,22 @@ const createCompany = async (req, res) => {
       logo,
       roles,
       ctc,
-      minCGPA,
-      allowedBranches,
       driveDate,
       deadline,
       status,
     } = req.body;
+
+    // eligibilityCriteria arrives nested from the frontend:
+    // { eligibilityCriteria: { minCGPA, allowedBranches } }
+    const minCGPA = req.body.eligibilityCriteria?.minCGPA;
+    const allowedBranches = req.body.eligibilityCriteria?.allowedBranches;
 
     const rolesArray = Array.isArray(roles)
       ? roles
       : roles
       ? roles.split(",").map((r) => r.trim())
       : [];
+
     const branchesArray = Array.isArray(allowedBranches)
       ? allowedBranches
       : allowedBranches
@@ -98,10 +111,13 @@ const createCompany = async (req, res) => {
     });
 
     const createdCompany = await company.save();
+
     res.status(201).json(createdCompany);
   } catch (error) {
     console.error("Create Company Error:", error);
-    res.status(500).json({ message: "Server error creating company drive" });
+    res.status(500).json({
+      message: "Server error creating company drive",
+    });
   }
 };
 
@@ -110,7 +126,9 @@ const updateCompany = async (req, res) => {
     const company = await Company.findById(req.params.id);
 
     if (!company) {
-      return res.status(404).json({ message: "Company drive not found" });
+      return res.status(404).json({
+        message: "Company drive not found",
+      });
     }
 
     const {
@@ -118,12 +136,15 @@ const updateCompany = async (req, res) => {
       logo,
       roles,
       ctc,
-      minCGPA,
-      allowedBranches,
       driveDate,
       deadline,
       status,
     } = req.body;
+
+    // eligibilityCriteria arrives nested from the frontend:
+    // { eligibilityCriteria: { minCGPA, allowedBranches } }
+    const minCGPA = req.body.eligibilityCriteria?.minCGPA;
+    const allowedBranches = req.body.eligibilityCriteria?.allowedBranches;
 
     company.companyName = companyName || company.companyName;
     company.logo = logo !== undefined ? logo : company.logo;
@@ -140,18 +161,26 @@ const updateCompany = async (req, res) => {
 
     if (minCGPA !== undefined || allowedBranches) {
       company.eligibilityCriteria = {
-        minCGPA: minCGPA !== undefined ? Number(minCGPA) : company.eligibilityCriteria.minCGPA,
+        minCGPA:
+          minCGPA !== undefined
+            ? Number(minCGPA)
+            : company.eligibilityCriteria.minCGPA,
         allowedBranches: allowedBranches
-          ? (Array.isArray(allowedBranches) ? allowedBranches : allowedBranches.split(",").map((b) => b.trim()))
+          ? Array.isArray(allowedBranches)
+            ? allowedBranches
+            : allowedBranches.split(",").map((b) => b.trim())
           : company.eligibilityCriteria.allowedBranches,
       };
     }
 
     const updatedCompany = await company.save();
+
     res.status(200).json(updatedCompany);
   } catch (error) {
     console.error("Update Company Error:", error);
-    res.status(500).json({ message: "Server error updating company drive" });
+    res.status(500).json({
+      message: "Server error updating company drive",
+    });
   }
 };
 
@@ -160,14 +189,21 @@ const deleteCompany = async (req, res) => {
     const company = await Company.findById(req.params.id);
 
     if (!company) {
-      return res.status(404).json({ message: "Company drive not found" });
+      return res.status(404).json({
+        message: "Company drive not found",
+      });
     }
 
     await Company.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Company drive removed successfully" });
+
+    res.status(200).json({
+      message: "Company drive removed successfully",
+    });
   } catch (error) {
     console.error("Delete Company Error:", error);
-    res.status(500).json({ message: "Server error deleting company drive" });
+    res.status(500).json({
+      message: "Server error deleting company drive",
+    });
   }
 };
 

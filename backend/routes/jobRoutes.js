@@ -1,36 +1,25 @@
-const express = require("express");
+const express = require('express');
+const router = express.Router();
+
 const {
-  getJobs,
+  getAllJobs,
   getJobById,
   createJob,
   updateJob,
   deleteJob,
-  getInternships,
-  getInternshipById,
-  createInternship,
-  updateInternship,
-  deleteInternship,
-} = require("../Controllers/jobController");
-const { protect, adminOnly } = require("../middleware/authMiddleware");
+  getJobStats,
+} = require('../controllers/jobController');
 
-const router = express.Router();
+const { protect, authorize } = require('../middleware/auth');
 
-router.route("/internships")
-  .get(getInternships)
-  .post(protect, adminOnly, createInternship);
+// Public / student routes
+router.get('/', getAllJobs);
+router.get('/stats/dashboard', protect, authorize('admin'), getJobStats);
+router.get('/:id', getJobById);
 
-router.route("/internships/:id")
-  .get(getInternshipById)
-  .put(protect, adminOnly, updateInternship)
-  .delete(protect, adminOnly, deleteInternship);
-
-router.route("/")
-  .get(getJobs)
-  .post(protect, adminOnly, createJob);
-
-router.route("/:id")
-  .get(getJobById)
-  .put(protect, adminOnly, updateJob)
-  .delete(protect, adminOnly, deleteJob);
+// Admin-only routes
+router.post('/', protect, authorize('admin'), createJob);
+router.put('/:id', protect, authorize('admin'), updateJob);
+router.delete('/:id', protect, authorize('admin'), deleteJob);
 
 module.exports = router;
