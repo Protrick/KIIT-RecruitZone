@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Save, X, AlertCircle, MapPin, FileText, Upload, Briefcase, GraduationCap, Building2, Clock } from 'lucide-react';
+import { Plus, Save, X, AlertCircle, MapPin, FileText, Upload, Briefcase, GraduationCap, Building2, Clock, Lock } from 'lucide-react';
+import axios from 'axios';
 
 /* ─── Animated counter ─── */
 function Counter({ value }) {
@@ -47,6 +48,7 @@ function useReveal(threshold = 0.06) {
 
 const CATS = ['Developer', 'Sales', 'Ops', 'Marketing', 'Analytics', 'Product', 'Design'];
 const EMPTY = {
+  listingType: 'Job',
   companyName: '', jobTitle: '', locationType: 'On-Campus',
   ctcAmount: '', ctcPeriod: '/m', stipendAmount: '', stipendPeriod: '/ month',
   skills: '', description: '', category: 'Developer', type: 'Full Time',
@@ -63,11 +65,78 @@ export default function AdminPanel() {
   const [exitId, setExitId]       = useState(null);
   const [mounted, setMounted]     = useState(false);
   const [activeSection, setActive]= useState(null);
+  const [adminToken, setAdminToken] = useState("");
 
   const formRef    = useReveal();
   const sideRef    = useReveal();
 
   useEffect(() => { const t = setTimeout(() => setMounted(true), 100); return () => clearTimeout(t); }, []);
+
+  useEffect(() => {
+    const autoLoginAndFetch = async () => {
+      // 1. Authenticate in the background
+      try {
+        const loginRes = await axios.post("http://localhost:5000/api/auth/login", {
+          email: "admin@kiit.ac.in",
+          password: "adminpassword"
+        });
+        if (loginRes.data && loginRes.data.token) {
+          setAdminToken(loginRes.data.token);
+        }
+      } catch (loginErr) {
+        console.error("Auto admin login failed:", loginErr);
+      }
+
+      // 2. Load listings
+      try {
+        const [jobsRes, internshipsRes] = await Promise.all([
+          axios.get("http://localhost:5000/api/jobs"),
+          axios.get("http://localhost:5000/api/jobs/internships")
+        ]);
+
+        const mappedJobs = jobsRes.data.map(j => ({
+          id: j._id,
+          listingType: "Job",
+          companyName: j.company,
+          jobTitle: j.title,
+          locationType: j.location,
+          ctc: `₹${j.salary.toLocaleString()}/annum`,
+          stipend: "N/A",
+          stipendPeriod: "",
+          skills: j.skillsRequired || [],
+          description: j.description || "No description provided.",
+          category: "Developer",
+          type: "Full Time",
+          verified: true,
+          postedDate: new Date(j.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          daysLeft: Math.max(0, Math.ceil((new Date(j.deadline) - new Date()) / (1000 * 60 * 60 * 24)))
+        }));
+
+        const mappedInternships = internshipsRes.data.map(i => ({
+          id: i._id,
+          listingType: "Internship",
+          companyName: i.company,
+          jobTitle: i.title,
+          locationType: i.location,
+          ctc: "N/A",
+          stipend: `₹${i.stipend.toLocaleString()}`,
+          stipendPeriod: "/ month",
+          skills: i.skillsRequired || [],
+          description: i.description || "No description provided.",
+          category: "Developer",
+          type: "Internship",
+          verified: true,
+          postedDate: new Date(i.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          daysLeft: Math.max(0, Math.ceil((new Date(i.deadline) - new Date()) / (1000 * 60 * 60 * 24)))
+        }));
+
+        setCards([...mappedJobs, ...mappedInternships]);
+      } catch (err) {
+        console.error("Error loading admin listings:", err);
+      }
+    };
+    autoLoginAndFetch();
+  }, []);
 
   const set = (e) => {
     const { name, value, type, checked } = e.target;
@@ -94,45 +163,122 @@ export default function AdminPanel() {
     const e = {};
     if (!form.companyName.trim())               e.companyName   = 'Required';
     if (!form.jobTitle.trim())                  e.jobTitle      = 'Required';
-    if (!form.ctcAmount || form.ctcAmount < 0)  e.ctcAmount     = 'Required';
-    if (!form.stipendAmount || form.stipendAmount < 0) e.stipendAmount = 'Required';
+    if (form.listingType === "Job" && (!form.ctcAmount || form.ctcAmount < 0))  e.ctcAmount     = 'Required';
+    if (form.listingType === "Internship" && (!form.stipendAmount || form.stipendAmount < 0)) e.stipendAmount = 'Required';
     if (!form.skills.trim())                    e.skills        = 'Required';
     if (!form.description.trim())               e.description   = 'Required';
     if (!form.daysLeft || form.daysLeft < 1)    e.daysLeft      = 'Min 1 day';
     setErrs(e); return !Object.keys(e).length;
   };
 
-  const submit = (ev) => {
+  const submit = async (ev) => {
     ev.preventDefault();
     if (!validate()) return;
     setBusy(true);
-    setTimeout(() => {
-      setCards(p => [{
-        id: Date.now(),
-        companyName:   form.companyName,
-        jobTitle:      form.jobTitle,
-        locationType:  form.locationType,
-        ctc:           '₹' + Number(form.ctcAmount).toLocaleString() + form.ctcPeriod,
-        stipend:       '₹' + Number(form.stipendAmount).toLocaleString(),
-        stipendPeriod: form.stipendPeriod,
-        skills:        form.skills.split(',').map(s => s.trim()).filter(Boolean),
-        description:   form.description,
-        category:      form.category,
-        type:          form.type,
-        verified:      form.verified,
-        postedDate:    new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        daysLeft:      parseInt(form.daysLeft),
-        pdfFile:       form.pdfFile,
-        pdfFileName:   form.pdfFileName,
-      }, ...p]);
-      setForm(EMPTY); setBusy(false);
-      setToast(true); setTimeout(() => setToast(false), 3500);
-    }, 700);
+    try {
+      const skillsArray = form.skills.split(',').map(s => s.trim()).filter(Boolean);
+      const isJob = form.listingType === "Job";
+      const headers = { Authorization: `Bearer ${adminToken}` };
+
+      if (isJob) {
+        const payload = {
+          title: form.jobTitle,
+          company: form.companyName,
+          location: form.locationType,
+          salary: Number(form.ctcAmount),
+          experienceRequired: "0-2 years",
+          skillsRequired: skillsArray,
+          applyUrl: "https://careers.kiit.ac.in",
+          deadline: new Date(Date.now() + Number(form.daysLeft) * 24 * 60 * 60 * 1000)
+        };
+        const res = await axios.post("http://localhost:5000/api/jobs", payload, { headers });
+        const newCard = {
+          id: res.data._id,
+          listingType: "Job",
+          companyName: res.data.company,
+          jobTitle: res.data.title,
+          locationType: res.data.location,
+          ctc: `₹${res.data.salary.toLocaleString()}/annum`,
+          stipend: "N/A",
+          stipendPeriod: "",
+          skills: res.data.skillsRequired || [],
+          description: form.description,
+          category: form.category,
+          type: form.type,
+          verified: form.verified,
+          postedDate: new Date(res.data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          daysLeft: parseInt(form.daysLeft),
+          pdfFile: form.pdfFile,
+          pdfFileName: form.pdfFileName
+        };
+        setCards(p => [newCard, ...p]);
+      } else {
+        const payload = {
+          title: form.jobTitle,
+          company: form.companyName,
+          location: form.locationType,
+          stipend: Number(form.stipendAmount),
+          duration: "3-6 Months",
+          skillsRequired: skillsArray,
+          applyUrl: "https://careers.kiit.ac.in",
+          deadline: new Date(Date.now() + Number(form.daysLeft) * 24 * 60 * 60 * 1000)
+        };
+        const res = await axios.post("http://localhost:5000/api/jobs/internships", payload, { headers });
+        const newCard = {
+          id: res.data._id,
+          listingType: "Internship",
+          companyName: res.data.company,
+          jobTitle: res.data.title,
+          locationType: res.data.location,
+          ctc: "N/A",
+          stipend: `₹${res.data.stipend.toLocaleString()}`,
+          stipendPeriod: "/ month",
+          skills: res.data.skillsRequired || [],
+          description: form.description,
+          category: form.category,
+          type: form.type,
+          verified: form.verified,
+          postedDate: new Date(res.data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          daysLeft: parseInt(form.daysLeft),
+          pdfFile: form.pdfFile,
+          pdfFileName: form.pdfFileName
+        };
+        setCards(p => [newCard, ...p]);
+      }
+      setForm(EMPTY);
+      setToast(true);
+      setTimeout(() => setToast(false), 3500);
+    } catch (error) {
+      console.error("Error creating listing:", error);
+      alert(error.response?.data?.message || "Failed to publish listing to the server.");
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const del = (id) => {
-    setExitId(id);
-    setTimeout(() => { setCards(p => p.filter(c => c.id !== id)); setExitId(null); }, 420);
+  const del = async (id) => {
+    const cardToDelete = cards.find(c => c.id === id);
+    if (!cardToDelete) return;
+    const confirmDelete = window.confirm(`Are you sure you want to delete the listing for "${cardToDelete.jobTitle}"?`);
+    if (!confirmDelete) return;
+
+    try {
+      const headers = { Authorization: `Bearer ${adminToken}` };
+      const isJob = cardToDelete.listingType === "Job";
+      if (isJob) {
+        await axios.delete(`http://localhost:5000/api/jobs/${id}`, { headers });
+      } else {
+        await axios.delete(`http://localhost:5000/api/jobs/internships/${id}`, { headers });
+      }
+      setExitId(id);
+      setTimeout(() => {
+        setCards(p => p.filter(c => c.id !== id));
+        setExitId(null);
+      }, 420);
+    } catch (error) {
+      console.error("Error deleting listing:", error);
+      alert(error.response?.data?.message || "Failed to delete the listing.");
+    }
   };
 
   const fd = n => ({ animationDelay: mounted ? n * 70 + 'ms' : '9999ms' });
@@ -616,6 +762,14 @@ export default function AdminPanel() {
               <div className="sec-body">
                 <div className="sec-grid">
 
+                  <div className="fg" style={fd(0)}>
+                    <label style={LBL}>Listing Type *</label>
+                    <div className="sw"><select className="sel" name="listingType" value={form.listingType} onChange={set}>
+                      <option value="Job">Job Posting</option>
+                      <option value="Internship">Internship Posting</option>
+                    </select></div>
+                  </div>
+
                   <div className="fg" style={fd(1)}>
                     <label style={LBL}>Company Name *</label>
                     <input className={'inp' + (errs.companyName ? ' e' : '')} type="text" name="companyName"
@@ -776,10 +930,10 @@ export default function AdminPanel() {
             <div className="submit-card" onClick={submit}>
               <div className="submit-text">
                 <h3>Ready to publish this listing?</h3>
-                <p>The internship will appear in the portal immediately after submission.</p>
+                <p>The {form.listingType.toLowerCase()} will appear in the portal immediately after submission.</p>
               </div>
               <button type="submit" className="btn-sub" disabled={busy} onClick={e => e.stopPropagation()}>
-                {busy ? <><div className="spinner" /> Publishing…</> : <><Save size={16} /> Add Internship</>}
+                {busy ? <><div className="spinner" /> Publishing…</> : <><Save size={16} /> Add {form.listingType}</>}
               </button>
             </div>
 
@@ -836,14 +990,16 @@ export default function AdminPanel() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, color: '#778' }}>
                           <MapPin size={12} /><span>{c.locationType}</span>
                         </div>
-                        <span className="ctcbadge">{c.ctc}</span>
+                        {c.listingType === "Job" && <span className="ctcbadge">{c.ctc}</span>}
                         <span className="typebadge">{c.type}</span>
                       </div>
 
-                      {/* Stipend */}
-                      <div style={{ fontSize: 15.5, fontWeight: 700, color: '#1a1a1a', marginBottom: 10 }}>
-                        {c.stipend} <span style={{ fontSize: 12.5, fontWeight: 400, color: '#8a9898' }}>{c.stipendPeriod}</span>
-                      </div>
+                      {/* Stipend or CTC */}
+                      {c.listingType === "Internship" && (
+                        <div style={{ fontSize: 15.5, fontWeight: 700, color: '#1a1a1a', marginBottom: 10 }}>
+                          {c.stipend} <span style={{ fontSize: 12.5, fontWeight: 400, color: '#8a9898' }}>{c.stipendPeriod}</span>
+                        </div>
+                      )}
 
                       {/* Skills */}
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 11 }}>

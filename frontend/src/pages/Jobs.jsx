@@ -179,7 +179,7 @@ const baseJobs = tab === "latest" ? latestJobs : sortedJobs;
           Job Opportunities
         </h1>
         <p className="text-gray-600 mt-2">
-          Training & Placement Cell – KIIT University
+          Training & Placement Cell - KIIT University
         </p>
       </section>
 
