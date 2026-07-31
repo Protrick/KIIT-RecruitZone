@@ -10,7 +10,7 @@ const {
   getJobStats,
 } = require('../controllers/jobController');
 
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
 // Public / student routes
 router.get('/', getAllJobs);

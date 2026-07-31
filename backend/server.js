@@ -12,6 +12,8 @@ const problemRoutes = require("./routes/problemRoutes");
 const authRoutes = require("./routes/authRoutes");
 const companyRoutes = require("./routes/companyRoutes");
 const jobRoutes = require("./routes/jobRoutes");
+const internshipRoutes = require("./routes/internshipRoutes");
+const applicationRoutes = require("./routes/applicationRoutes");
 
 const app = express();
 
@@ -24,6 +26,8 @@ app.use("/api/problems", problemRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/companies", companyRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/internships", internshipRoutes);
+app.use("/api/applications", applicationRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)

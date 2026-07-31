@@ -8,6 +8,9 @@ const applicationSchema = new mongoose.Schema(
       required: [true, 'Student reference is required'],
     },
 
+    // Polymorphic reference: driveType tells Mongoose which model
+    // `drive` points to (Job or Internship), so one Application model
+    // covers both without duplicating logic.
     driveType: {
       type: String,
       required: [true, 'Drive type is required'],
@@ -25,6 +28,51 @@ const applicationSchema = new mongoose.Schema(
       filePath: { type: String, required: true }, // relative path, e.g. "uploads/resumes/xyz.pdf"
       mimeType: { type: String, required: true },
       size: { type: Number, required: true }, // bytes
+    },
+
+    // Captured directly on the application form (not just pulled from the
+    // User profile), since admins need to verify eligibility per-application
+    // and these details should stay as a historical snapshot even if the
+    // student's profile changes later.
+    applicantDetails: {
+      fullName: {
+        type: String,
+        required: [true, 'Full name is required'],
+        trim: true,
+      },
+      rollNumber: {
+        type: String,
+        required: [true, 'Roll number is required'],
+        trim: true,
+      },
+      email: {
+        type: String,
+        required: [true, 'Email is required'],
+        trim: true,
+        lowercase: true,
+      },
+      class10Marks: {
+        type: Number,
+        required: [true, 'Class 10 marks/percentage is required'],
+        min: 0,
+        max: 100,
+      },
+      class12Marks: {
+        type: Number,
+        required: [true, 'Class 12 marks/percentage is required'],
+        min: 0,
+        max: 100,
+      },
+      collegeName: {
+        type: String,
+        required: [true, 'College name is required'],
+        trim: true,
+        default: 'Kalinga Institute of Industrial Technology (KIIT)',
+      },
+      passingBatch: {
+        type: Number,
+        required: [true, 'Passing batch/year is required'],
+      },
     },
 
     coverNote: {
