@@ -1,7 +1,8 @@
+import { Link } from "react-router-dom";
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Save, X, AlertCircle, MapPin, FileText, Upload, Briefcase, GraduationCap, Building2, Clock, ArrowRight } from 'lucide-react';
-
+import { Plus, Save, X, AlertCircle, MapPin, FileText, Upload, Briefcase, GraduationCap, Building2, Clock, Lock } from 'lucide-react';
+import { ArrowRight } from "lucide-react";
+import axios from 'axios';
 /* ─── Animated counter ─── */
 function Counter({ value }) {
   const [n, setN] = useState(0);
@@ -48,6 +49,7 @@ function useReveal(threshold = 0.06) {
 
 const CATS = ['Developer', 'Sales', 'Ops', 'Marketing', 'Analytics', 'Product', 'Design'];
 const EMPTY = {
+  listingType: 'Job',
   companyName: '', jobTitle: '', locationType: 'On-Campus',
   ctcAmount: '', ctcPeriod: '/m', stipendAmount: '', stipendPeriod: '/ month',
   skills: '', description: '', category: 'Developer', type: 'Full Time',
@@ -64,11 +66,92 @@ export default function AdminPanel() {
   const [exitId, setExitId]       = useState(null);
   const [mounted, setMounted]     = useState(false);
   const [activeSection, setActive]= useState(null);
+  const [adminToken, setAdminToken] = useState("");
 
   const formRef    = useReveal();
   const sideRef    = useReveal();
 
   useEffect(() => { const t = setTimeout(() => setMounted(true), 100); return () => clearTimeout(t); }, []);
+
+  useEffect(() => {
+    const autoLoginAndFetch = async () => {
+      // 1. Authenticate in the background (Register if not exists, then Login)
+      try {
+        try {
+          await axios.post("http://localhost:5000/api/auth/register", {
+            name: "T&P Officer",
+            email: "admin@kiit.ac.in",
+            password: "adminpassword",
+            role: "admin"
+          });
+        } catch (regErr) {
+          // Ignore registration errors (e.g. if user already exists)
+        }
+
+        const loginRes = await axios.post("http://localhost:5000/api/auth/login", {
+          email: "admin@kiit.ac.in",
+          password: "adminpassword"
+        });
+        if (loginRes.data && loginRes.data.token) {
+          setAdminToken(loginRes.data.token);
+        }
+      } catch (loginErr) {
+        console.error("Auto admin login failed:", loginErr);
+      }
+
+      // 2. Load listings
+      try {
+        const [jobsRes, internshipsRes] = await Promise.all([
+          axios.get("http://localhost:5000/api/jobs"),
+          axios.get("http://localhost:5000/api/jobs/internships")
+        ]);
+
+        const jobs = jobsRes.data?.data || jobsRes.data || [];
+        const internships = internshipsRes.data?.data || internshipsRes.data || [];
+
+        const mappedJobs = jobs.map(j => ({
+          id: j._id,
+          listingType: "Job",
+          companyName: j.company,
+          jobTitle: j.role || j.title,
+          locationType: j.location,
+          ctc: j.ctc || (j.salary ? `₹${j.salary.toLocaleString()}/annum` : "N/A"),
+          stipend: "N/A",
+          stipendPeriod: "",
+          skills: j.skills || j.skillsRequired || [],
+          description: j.description || "No description provided.",
+          category: "Developer",
+          type: j.type || "Full Time",
+          verified: true,
+          postedDate: new Date(j.postedDate || j.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          daysLeft: typeof j.daysLeft === 'number' ? j.daysLeft : Math.max(0, Math.ceil((new Date(j.registrationDeadline || j.deadline) - new Date()) / (1000 * 60 * 60 * 24)))
+        }));
+
+        const mappedInternships = internships.map(i => ({
+          id: i._id,
+          listingType: "Internship",
+          companyName: i.company,
+          jobTitle: i.role || i.title,
+          locationType: i.location,
+          ctc: "N/A",
+          stipend: i.stipend || (i.stipendAmount ? `₹${i.stipendAmount.toLocaleString()}` : "N/A"),
+          stipendPeriod: "/ month",
+          skills: i.skills || i.skillsRequired || [],
+          description: i.description || "No description provided.",
+          category: i.category || "Developer",
+          type: "Internship",
+          verified: true,
+          postedDate: new Date(i.postedOn || i.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          daysLeft: typeof i.daysLeft === 'number' ? i.daysLeft : Math.max(0, Math.ceil((new Date(i.registrationDeadline || i.deadline) - new Date()) / (1000 * 60 * 60 * 24)))
+        }));
+
+        setCards([...mappedJobs, ...mappedInternships]);
+      } catch (err) {
+        console.error("Error loading admin listings:", err);
+      }
+    };
+    autoLoginAndFetch();
+  }, []);
 
   const set = (e) => {
     const { name, value, type, checked } = e.target;
@@ -95,45 +178,135 @@ export default function AdminPanel() {
     const e = {};
     if (!form.companyName.trim())               e.companyName   = 'Required';
     if (!form.jobTitle.trim())                  e.jobTitle      = 'Required';
-    if (!form.ctcAmount || form.ctcAmount < 0)  e.ctcAmount     = 'Required';
-    if (!form.stipendAmount || form.stipendAmount < 0) e.stipendAmount = 'Required';
+    if (form.listingType === "Job" && (!form.ctcAmount || form.ctcAmount < 0))  e.ctcAmount     = 'Required';
+    if (form.listingType === "Internship" && (!form.stipendAmount || form.stipendAmount < 0)) e.stipendAmount = 'Required';
     if (!form.skills.trim())                    e.skills        = 'Required';
     if (!form.description.trim())               e.description   = 'Required';
     if (!form.daysLeft || form.daysLeft < 1)    e.daysLeft      = 'Min 1 day';
     setErrs(e); return !Object.keys(e).length;
   };
 
-  const submit = (ev) => {
+  const submit = async (ev) => {
     ev.preventDefault();
     if (!validate()) return;
     setBusy(true);
-    setTimeout(() => {
-      setCards(p => [{
-        id: Date.now(),
-        companyName:   form.companyName,
-        jobTitle:      form.jobTitle,
-        locationType:  form.locationType,
-        ctc:           '₹' + Number(form.ctcAmount).toLocaleString() + form.ctcPeriod,
-        stipend:       '₹' + Number(form.stipendAmount).toLocaleString(),
-        stipendPeriod: form.stipendPeriod,
-        skills:        form.skills.split(',').map(s => s.trim()).filter(Boolean),
-        description:   form.description,
-        category:      form.category,
-        type:          form.type,
-        verified:      form.verified,
-        postedDate:    new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        daysLeft:      parseInt(form.daysLeft),
-        pdfFile:       form.pdfFile,
-        pdfFileName:   form.pdfFileName,
-      }, ...p]);
-      setForm(EMPTY); setBusy(false);
-      setToast(true); setTimeout(() => setToast(false), 3500);
-    }, 700);
+    try {
+      const skillsArray = form.skills.split(',').map(s => s.trim()).filter(Boolean);
+      const isJob = form.listingType === "Job";
+      const headers = { Authorization: `Bearer ${adminToken}` };
+
+      if (isJob) {
+        const payload = {
+          role: form.jobTitle,
+          company: form.companyName,
+          location: form.locationType,
+          ctc: `${form.ctcAmount} LPA`,
+          ctcValue: Number(form.ctcAmount),
+          experience: "0-2 years",
+          skills: skillsArray,
+          registrationLink: "https://careers.kiit.ac.in",
+          registrationDeadline: new Date(Date.now() + Number(form.daysLeft) * 24 * 60 * 60 * 1000),
+          eligibility: {
+            branchesAllowed: ["CSE", "IT", "ETC"],
+            batchYears: [2026]
+          }
+        };
+        const res = await axios.post("http://localhost:5000/api/jobs", payload, { headers });
+        const jobData = res.data.data;
+        const newCard = {
+          id: jobData._id,
+          listingType: "Job",
+          companyName: jobData.company,
+          jobTitle: jobData.role,
+          locationType: jobData.location,
+          ctc: jobData.ctc,
+          stipend: "N/A",
+          stipendPeriod: "",
+          skills: jobData.skills || [],
+          description: form.description,
+          category: form.category,
+          type: form.type,
+          verified: form.verified,
+          postedDate: new Date(jobData.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          daysLeft: parseInt(form.daysLeft),
+          pdfFile: form.pdfFile,
+          pdfFileName: form.pdfFileName
+        };
+        setCards(p => [newCard, ...p]);
+      } else {
+        const payload = {
+          role: form.jobTitle,
+          company: form.companyName,
+          location: form.locationType,
+          stipend: `₹${Number(form.stipendAmount).toLocaleString()}`,
+          stipendAmount: Number(form.stipendAmount),
+          duration: "3-6 Months",
+          category: form.category || "Software Development",
+          skills: skillsArray,
+          registrationLink: "https://careers.kiit.ac.in",
+          registrationDeadline: new Date(Date.now() + Number(form.daysLeft) * 24 * 60 * 60 * 1000),
+          eligibility: {
+            branchesAllowed: ["CSE", "IT", "ETC"],
+            batchYears: [2026]
+          }
+        };
+        const res = await axios.post("http://localhost:5000/api/jobs/internships", payload, { headers });
+        const internshipData = res.data.data;
+        const newCard = {
+          id: internshipData._id,
+          listingType: "Internship",
+          companyName: internshipData.company,
+          jobTitle: internshipData.role,
+          locationType: internshipData.location,
+          ctc: "N/A",
+          stipend: internshipData.stipend,
+          stipendPeriod: "/ month",
+          skills: internshipData.skills || [],
+          description: form.description,
+          category: form.category,
+          type: form.type,
+          verified: form.verified,
+          postedDate: new Date(internshipData.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          daysLeft: parseInt(form.daysLeft),
+          pdfFile: form.pdfFile,
+          pdfFileName: form.pdfFileName
+        };
+        setCards(p => [newCard, ...p]);
+      }
+      setForm(EMPTY);
+      setToast(true);
+      setTimeout(() => setToast(false), 3500);
+    } catch (error) {
+      console.error("Error creating listing:", error);
+      alert(error.response?.data?.message || "Failed to publish listing to the server.");
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const del = (id) => {
-    setExitId(id);
-    setTimeout(() => { setCards(p => p.filter(c => c.id !== id)); setExitId(null); }, 420);
+  const del = async (id) => {
+    const cardToDelete = cards.find(c => c.id === id);
+    if (!cardToDelete) return;
+    const confirmDelete = window.confirm(`Are you sure you want to delete the listing for "${cardToDelete.jobTitle}"?`);
+    if (!confirmDelete) return;
+
+    try {
+      const headers = { Authorization: `Bearer ${adminToken}` };
+      const isJob = cardToDelete.listingType === "Job";
+      if (isJob) {
+        await axios.delete(`http://localhost:5000/api/jobs/${id}`, { headers });
+      } else {
+        await axios.delete(`http://localhost:5000/api/jobs/internships/${id}`, { headers });
+      }
+      setExitId(id);
+      setTimeout(() => {
+        setCards(p => p.filter(c => c.id !== id));
+        setExitId(null);
+      }, 420);
+    } catch (error) {
+      console.error("Error deleting listing:", error);
+      alert(error.response?.data?.message || "Failed to delete the listing.");
+    }
   };
 
   const fd = n => ({ animationDelay: mounted ? n * 70 + 'ms' : '9999ms' });
@@ -638,6 +811,14 @@ export default function AdminPanel() {
               <div className="sec-body">
                 <div className="sec-grid">
 
+                  <div className="fg" style={fd(0)}>
+                    <label style={LBL}>Listing Type *</label>
+                    <div className="sw"><select className="sel" name="listingType" value={form.listingType} onChange={set}>
+                      <option value="Job">Job Posting</option>
+                      <option value="Internship">Internship Posting</option>
+                    </select></div>
+                  </div>
+
                   <div className="fg" style={fd(1)}>
                     <label style={LBL}>Company Name *</label>
                     <input className={'inp' + (errs.companyName ? ' e' : '')} type="text" name="companyName"
@@ -798,10 +979,10 @@ export default function AdminPanel() {
             <div className="submit-card" onClick={submit}>
               <div className="submit-text">
                 <h3>Ready to publish this listing?</h3>
-                <p>The internship will appear in the portal immediately after submission.</p>
+                <p>The {form.listingType.toLowerCase()} will appear in the portal immediately after submission.</p>
               </div>
               <button type="submit" className="btn-sub" disabled={busy} onClick={e => e.stopPropagation()}>
-                {busy ? <><div className="spinner" /> Publishing…</> : <><Save size={16} /> Add Internship</>}
+                {busy ? <><div className="spinner" /> Publishing…</> : <><Save size={16} /> Add {form.listingType}</>}
               </button>
             </div>
 
@@ -858,14 +1039,16 @@ export default function AdminPanel() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, color: '#778' }}>
                           <MapPin size={12} /><span>{c.locationType}</span>
                         </div>
-                        <span className="ctcbadge">{c.ctc}</span>
+                        {c.listingType === "Job" && <span className="ctcbadge">{c.ctc}</span>}
                         <span className="typebadge">{c.type}</span>
                       </div>
 
-                      {/* Stipend */}
-                      <div style={{ fontSize: 15.5, fontWeight: 700, color: '#1a1a1a', marginBottom: 10 }}>
-                        {c.stipend} <span style={{ fontSize: 12.5, fontWeight: 400, color: '#8a9898' }}>{c.stipendPeriod}</span>
-                      </div>
+                      {/* Stipend or CTC */}
+                      {c.listingType === "Internship" && (
+                        <div style={{ fontSize: 15.5, fontWeight: 700, color: '#1a1a1a', marginBottom: 10 }}>
+                          {c.stipend} <span style={{ fontSize: 12.5, fontWeight: 400, color: '#8a9898' }}>{c.stipendPeriod}</span>
+                        </div>
+                      )}
 
                       {/* Skills */}
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 11 }}>
