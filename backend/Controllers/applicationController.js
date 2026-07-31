@@ -3,7 +3,8 @@ const path = require('path');
 const mongoose = require('mongoose');
 const Application = require('../models/Application');
 
-
+// NOTE: requires models/Job.js and models/Internship.js to already be
+// registered with mongoose (they are, if required elsewhere in the app).
 const DRIVE_MODELS = ['Job', 'Internship'];
 
 const deleteResumeFile = (filePath) => {
@@ -17,12 +18,24 @@ const deleteResumeFile = (filePath) => {
  * @desc    Apply to a job or internship drive (with resume upload)
  * @route   POST /api/applications
  * @access  Student
- * @body    driveType ('Job' | 'Internship'), drive (ObjectId), coverNote (optional)
+ * @body    driveType ('Job' | 'Internship'), drive (ObjectId), coverNote (optional),
+ *          fullName, rollNumber, email, class10Marks, class12Marks, collegeName, passingBatch
  * @file    resume (handled by middleware/resumeUpload.js)
  */
 exports.createApplication = async (req, res) => {
   try {
-    const { driveType, drive, coverNote } = req.body;
+    const {
+      driveType,
+      drive,
+      coverNote,
+      fullName,
+      rollNumber,
+      email,
+      class10Marks,
+      class12Marks,
+      collegeName,
+      passingBatch,
+    } = req.body;
 
     if (!DRIVE_MODELS.includes(driveType)) {
       if (req.file) deleteResumeFile(path.join('uploads', 'resumes', req.file.filename));
@@ -58,6 +71,15 @@ exports.createApplication = async (req, res) => {
       driveType,
       drive,
       coverNote,
+      applicantDetails: {
+        fullName,
+        rollNumber,
+        email,
+        class10Marks,
+        class12Marks,
+        collegeName,
+        passingBatch,
+      },
       resume: {
         fileName: req.file.filename,
         originalName: req.file.originalname,

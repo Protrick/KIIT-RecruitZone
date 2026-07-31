@@ -10,7 +10,7 @@ const {
   deleteApplication,
 } = require('../controllers/applicationController');
 
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/authMiddleware');
 const resumeUpload = require('../middleware/resumeUpload');
 
 // Student routes

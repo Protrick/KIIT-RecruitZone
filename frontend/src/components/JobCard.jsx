@@ -1,5 +1,6 @@
 import { Heart, MapPin, IndianRupee } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const JobCard = ({ job }) => {
   const [isSaved, setIsSaved] = useState(false);
@@ -105,9 +106,16 @@ const JobCard = ({ job }) => {
       </p>
 
       {/* ===== Apply Button ===== */}
-      <button className="mt-3 w-full bg-green-700 hover:bg-green-800 text-white py-2.5 rounded-xl font-medium transition flex items-center justify-center gap-2">
+      {/* <button className="mt-3 w-full bg-green-700 hover:bg-green-800 text-white py-2.5 rounded-xl font-medium transition flex items-center justify-center gap-2">
         Apply Now →
-      </button>
+      </button> */}
+
+      <Link
+  to={`/apply/Job/${job.id}`}
+  className="mt-3 w-full bg-green-700 hover:bg-green-800 text-white py-2.5 rounded-xl font-medium transition flex items-center justify-center gap-2"
+>
+  Apply Now →
+</Link>
     </div>
   );
 };

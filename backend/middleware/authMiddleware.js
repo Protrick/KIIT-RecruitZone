@@ -31,6 +31,7 @@ const protect = async (req, res, next) => {
   }
 };
 
+// Kept for backward compatibility with any route still using `adminOnly` directly.
 const adminOnly = (req, res, next) => {
   if (req.user && req.user.role === "admin") {
     next();
@@ -39,7 +40,24 @@ const adminOnly = (req, res, next) => {
   }
 };
 
+const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authorized, no user on request" });
+    }
+
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        message: `Role '${req.user.role}' is not permitted to perform this action`,
+      });
+    }
+
+    next();
+  };
+};
+
 module.exports = {
   protect,
   adminOnly,
+  authorize,
 };
