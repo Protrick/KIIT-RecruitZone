@@ -105,9 +105,16 @@ const JobCard = ({ job }) => {
       </p>
 
       {/* ===== Apply Button ===== */}
-      <button className="mt-3 w-full bg-green-700 hover:bg-green-800 text-white py-2.5 rounded-xl font-medium transition flex items-center justify-center gap-2">
+      {/* <button className="mt-3 w-full bg-green-700 hover:bg-green-800 text-white py-2.5 rounded-xl font-medium transition flex items-center justify-center gap-2">
         Apply Now →
-      </button>
+      </button> */}
+
+      <Link
+  to={`/apply/Job/${job.id}`}
+  className="mt-3 w-full bg-green-700 hover:bg-green-800 text-white py-2.5 rounded-xl font-medium transition flex items-center justify-center gap-2"
+>
+  Apply Now →
+</Link>
     </div>
   );
 };

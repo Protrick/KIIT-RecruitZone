@@ -11,6 +11,7 @@ import AuthPage from "./components/Authpage";
 import Internship from "./pages/Internships";
 import PrepareInterview from "./pages/Interview";
 import DSAProblems from "./pages/Dsa";
+import Apply from "./pages/Apply";
 
 function App() {
   // temporarily force authentication so routes render during development
@@ -22,7 +23,7 @@ function App() {
       {isAuthenticated ? (
         <>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={< AuthPage />} />
             <Route path="/login" element={<AuthPage onLogin={() => setIsAuthenticated(true)} />} />
             <Route path="/companies" element={<Companies />} />
             <Route path="/events" element={<Events />} />
@@ -31,6 +32,7 @@ function App() {
             <Route path="/dashboard/jobs" element={<Jobs />} />
             <Route path="/dashboard/internships" element={<Internship />} />
             <Route path="/dashboard/prepare-interview" element={<PrepareInterview />} />
+            <Route path="/apply/:driveType/:driveId" element={<Apply />} />
             {/*<Route path="/dashboard/prepare-interview/:category" element={<DSAProblems />} /> */}
             <Route path="/problems" element={<DSAProblems />} />
 
