@@ -103,7 +103,7 @@ export default function AdminPanel() {
       try {
         const [jobsRes, internshipsRes] = await Promise.all([
           axios.get("http://localhost:5000/api/jobs"),
-          axios.get("http://localhost:5000/api/jobs/internships")
+          axios.get("http://localhost:5000/api/internships")
         ]);
 
         const jobs = jobsRes.data?.data || jobsRes.data || [];
@@ -203,6 +203,8 @@ export default function AdminPanel() {
           ctc: `${form.ctcAmount} LPA`,
           ctcValue: Number(form.ctcAmount),
           experience: "0-2 years",
+          type: form.type,
+          description: form.description,
           skills: skillsArray,
           registrationLink: "https://careers.kiit.ac.in",
           registrationDeadline: new Date(Date.now() + Number(form.daysLeft) * 24 * 60 * 60 * 1000),
@@ -242,6 +244,7 @@ export default function AdminPanel() {
           stipendAmount: Number(form.stipendAmount),
           duration: "3-6 Months",
           category: form.category || "Software Development",
+          description: form.description,
           skills: skillsArray,
           registrationLink: "https://careers.kiit.ac.in",
           registrationDeadline: new Date(Date.now() + Number(form.daysLeft) * 24 * 60 * 60 * 1000),
@@ -250,7 +253,7 @@ export default function AdminPanel() {
             batchYears: [2026]
           }
         };
-        const res = await axios.post("http://localhost:5000/api/jobs/internships", payload, { headers });
+        const res = await axios.post("http://localhost:5000/api/internships", payload, { headers });
         const internshipData = res.data.data;
         const newCard = {
           id: internshipData._id,
@@ -296,7 +299,7 @@ export default function AdminPanel() {
       if (isJob) {
         await axios.delete(`http://localhost:5000/api/jobs/${id}`, { headers });
       } else {
-        await axios.delete(`http://localhost:5000/api/jobs/internships/${id}`, { headers });
+        await axios.delete(`http://localhost:5000/api/internships/${id}`, { headers });
       }
       setExitId(id);
       setTimeout(() => {
