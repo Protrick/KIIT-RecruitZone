@@ -8,7 +8,7 @@ const {
   getApplicationsForDrive,
   updateApplicationStatus,
   deleteApplication,
-} = require('../controllers/applicationController');
+} = require('../Controllers/applicationController');
 
 const { protect, authorize } = require('../middleware/authMiddleware');
 const resumeUpload = require('../middleware/resumeUpload');
