@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import api from "../api/axios";
-import AdminCompanyCard from "../components/AdminCompanyCard";
+import AdminCompanyCard from "../components/AdminCompanycard";
 import AdminCompanyFilter from "../components/AdminCompanyFilter";
 import CompanyFormModal from "../components/CompanyFormModal";
 import KIITHeader from "../assets/kiit-header.png";
