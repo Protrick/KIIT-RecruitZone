@@ -10,6 +10,8 @@ const AuthPage = ({ onLogin }) => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [branch, setBranch] = useState("");
+  const [batchYear, setBatchYear] = useState("");
   const [error, setError] = useState("");
   const isValidKiitEmail = (email) => {
     return /^[a-zA-Z0-9._%+-]+@kiit\.ac\.in$/.test(email);
@@ -20,6 +22,19 @@ const AuthPage = ({ onLogin }) => {
 
   if (isSignup && fullName.trim() === "") {
     setError("Full name is required");
+    return;
+  }
+
+  // Branch and Batch Year are required by the backend for every student
+  // account (used later for eligibility filtering), so signup must collect
+  // them here or every registration attempt gets rejected.
+  if (isSignup && branch.trim() === "") {
+    setError("Branch is required");
+    return;
+  }
+
+  if (isSignup && !batchYear) {
+    setError("Batch year is required");
     return;
   }
 
@@ -49,6 +64,8 @@ const AuthPage = ({ onLogin }) => {
           name: fullName,
           email,
           password,
+          branch,
+          batchYear: Number(batchYear),
         }
       );
     } else {
@@ -113,7 +130,10 @@ const AuthPage = ({ onLogin }) => {
             </span>
           </div>
 
-          <div className="form signup-form">
+          <div
+            className="form signup-form"
+            style={{ overflowY: "auto", justifyContent: "flex-start" }}
+          >
             <h2>Create Account</h2>
             <p>Register for Training & Placement</p>
 
@@ -137,6 +157,38 @@ const AuthPage = ({ onLogin }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+
+            <p
+              style={{
+                fontSize: "12px",
+                fontWeight: 600,
+                color: "#8a8a8a",
+                textTransform: "uppercase",
+                letterSpacing: "0.5px",
+                marginTop: "14px",
+                marginBottom: "6px",
+              }}
+            >
+              Academic Details
+            </p>
+
+            <div style={{ display: "flex", gap: "10px" }}>
+              <input
+                type="text"
+                placeholder="Branch (e.g. CSE)"
+                value={branch}
+                onChange={(e) => setBranch(e.target.value)}
+                style={{ flex: 1, minWidth: 0 }}
+              />
+
+              <input
+                type="number"
+                placeholder="Batch Year"
+                value={batchYear}
+                onChange={(e) => setBatchYear(e.target.value)}
+                style={{ flex: 1, minWidth: 0 }}
+              />
+            </div>
 
             {error && <p className="error">{error}</p>}
 
